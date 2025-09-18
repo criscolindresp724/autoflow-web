@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { AdminDashboard } from "@/components/admin/admin-dashboard"
 import { TallerDashboard } from "@/components/taller/taller-dashboard"
@@ -7,7 +7,23 @@ import { AseguradoraDashboard } from "@/components/aseguradora/aseguradora-dashb
 import { ClienteDashboard } from "@/components/cliente/cliente-dashboard"
 
 export default async function DashboardPage() {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return cookies().get(name)?.value
+        },
+        set(name, value, options) {
+          cookies().set({ name, value, ...options })
+        },
+        remove(name, options) {
+          cookies().set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
 
   const {
     data: { session },

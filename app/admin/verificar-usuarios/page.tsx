@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CheckCircle, XCircle, RefreshCw, UserCog, Shield, AlertTriangle } from "lucide-react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createBrowserClient } from "@supabase/ssr"
 
 export default function VerificarUsuariosPage() {
   const [loading, setLoading] = useState(true)
@@ -19,7 +19,10 @@ export default function VerificarUsuariosPage() {
   const [activeTab, setActiveTab] = useState("todos")
   const [fixResult, setFixResult] = useState<any>(null)
 
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   const fetchUsers = async () => {
     setLoading(true)
