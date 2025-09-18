@@ -3,6 +3,19 @@ import { supabaseAdmin } from "@/lib/supabase/admin-client"
 
 export async function GET() {
   try {
+    // Verificar que el cliente de administración esté disponible
+    if (!supabaseAdmin) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Cliente de administración no disponible",
+          error: "Variables de entorno no configuradas",
+          fix: "Configura NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en Vercel",
+        },
+        { status: 500 },
+      )
+    }
+
     // 1. Verificar conexión a Supabase
     const { data: connectionTest, error: connectionError } = await supabaseAdmin
       .from("roles")
