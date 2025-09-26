@@ -9,7 +9,7 @@ import { FileText, Users, Car, BarChart3, LogOut } from "lucide-react"
 export function AseguradoraDashboard() {
   const { user, signOut } = useAuth()
   const router = useRouter()
-
+console.log('aseguradora page ============>')
   const handleSignOut = async () => {
     await signOut()
     router.push("/auth/login")

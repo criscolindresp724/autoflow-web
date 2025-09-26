@@ -285,7 +285,7 @@ export default function HojaIngreso({ vehiculoId, onSave, onCancel }: HojaIngres
       })
       return
     }
-    // setIsLoading(true);
+    setIsLoading(true);
 
     // 1. Sube las imágenes y obtén las URLs
     let urls: string[] = [];
@@ -295,19 +295,7 @@ export default function HojaIngreso({ vehiculoId, onSave, onCancel }: HojaIngres
     } else {
       urls = UrlsimagenesCarroceria;
     }
-    // const inspeccionData: HojaIngresoType = {
-    //   vehiculo_id: vehiculoId,
-    //   fecha: new Date().toISOString(),
-    //   interiores,
-    //   exteriores,
-    //   coqueta,
-    //   motor,
-    //   nivel_gasolina: nivelGasolina,
-    //   comentarios,
-    //   imagen_carroceria: imagenCarroceria,
-    //   puntos,
-    //   firmas: { firmaCliente, firmaEncargado }
-    // }
+
     const inspeccionData: HojaIngresoType = {
       vehiculo_id: vehiculoId,
       fecha: new Date().toISOString(),
@@ -329,6 +317,7 @@ export default function HojaIngreso({ vehiculoId, onSave, onCancel }: HojaIngres
       title: "Éxito",
       description: "Hoja de ingreso guardada correctamente",
     })
+    setIsLoading(false)
 
     if (onSave) onSave()
   }
@@ -755,7 +744,7 @@ export default function HojaIngreso({ vehiculoId, onSave, onCancel }: HojaIngres
                       key={idx}
                       src={img}
                       alt={`Carrocería ${idx + 1}`}
-                      className="max-h-40 border rounded"
+                      className="max-h-96 max-w-96 border rounded"
                     />
                   ))}
                 </div>

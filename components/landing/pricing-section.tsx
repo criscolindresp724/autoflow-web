@@ -89,7 +89,7 @@ export function PricingSection() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Link href="/auth/registro-taller" className="w-full">
+                <Link href="/checkout/premium-plans" className="w-full">
                   <Button className="w-full" variant={plan.popular ? "default" : "outline"}>
                     Comenzar ahora
                   </Button>

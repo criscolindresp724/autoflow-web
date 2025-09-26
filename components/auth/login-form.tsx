@@ -42,7 +42,9 @@ export default function LoginForm() {
         throw error
       }
       console.log("Usuario autenticado:", data.user)
+      console.log("Usuario Roles ===========>:", data.user?.user_metadata?.role)
       // Redirigir según el rol del usuario (esto se puede personalizar)
+      return router.push("/aseguradora/dashboard")
       if (data.user?.user_metadata?.role === "admin") {
         router.push("/admin/dashboard")
       } else if (data.user?.user_metadata?.role === "cliente") {
