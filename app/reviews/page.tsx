@@ -4,10 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import REVIEW_SERVICES, { ReviewType } from "@/services/REVIEWS_SERVICES.service";
 import { useEffect, useState } from "react";
 
-export default function ReviewPage() {
+export default function ReviewPage({ limit = 999 }: { limit?: number }) {
     const [State_Reviews, SetState_Reviews] = useState<ReviewType[]>([])
     const FN_GET_DATA = async () => {
-        const res = await REVIEW_SERVICES.GET_REVIEWS();
+        const res = await REVIEW_SERVICES.GET_REVIEWS(limit);
         SetState_Reviews(res)
 
     }

@@ -298,7 +298,7 @@ export default function Home() {
         <PricingSection />
 
         {/* Testimonials Section */}
-        <ReviewPage />
+        <ReviewPage limit={9} />
 
         {/* CTA Section */}
         <section className="w-full py-12 md:py-24 lg:py-32">
