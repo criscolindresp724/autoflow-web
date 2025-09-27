@@ -22,7 +22,7 @@ import {
 } from "lucide-react"
 import HeaderLaddingComponent from "@/components/header/HeaderComponent"
 import { PricingSection } from "@/components/landing/pricing-section"
-import ReviewPage from "./reviews/page"
+import ReviewComponent from "@/components/landing/reviews"
 
 export default function Home() {
   return (
@@ -298,7 +298,7 @@ export default function Home() {
         <PricingSection />
 
         {/* Testimonials Section */}
-        <ReviewPage limit={9} />
+        <ReviewComponent limit={9} />
 
         {/* CTA Section */}
         <section className="w-full py-12 md:py-24 lg:py-32">
