@@ -19,10 +19,10 @@ export default function HeaderLaddingComponent() {
                     <Link href="#modulos" className="transition-colors hover:text-foreground/80">
                         Módulos
                     </Link>
-                    <Link href="#precios" className="transition-colors hover:text-foreground/80">
+                    <Link href="/precing" className="transition-colors hover:text-foreground/80">
                         Precios
                     </Link>
-                    <Link href="#testimonios" className="transition-colors hover:text-foreground/80">
+                    <Link href="/reviews" className="transition-colors hover:text-foreground/80">
                         Testimonios
                     </Link>
                 </nav>

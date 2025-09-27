@@ -21,6 +21,8 @@ import {
   MessageSquare,
 } from "lucide-react"
 import HeaderLaddingComponent from "@/components/header/HeaderComponent"
+import { PricingSection } from "@/components/landing/pricing-section"
+import ReviewPage from "./reviews/page"
 
 export default function Home() {
   return (
@@ -293,172 +295,10 @@ export default function Home() {
         </section>
 
         {/* Pricing Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50" id="precios">
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">Precios</div>
-                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                  Planes adaptados a las necesidades de tu taller
-                </h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Elige el plan que mejor se adapte a tu negocio y paga solo por lo que necesitas.
-                </p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-6 pt-12 md:grid-cols-3 lg:gap-8">
-              {[
-                {
-                  name: "Básico",
-                  description: "Ideal para talleres pequeños que están comenzando",
-                  price: "$999",
-                  features: [
-                    "Hasta 2 usuarios",
-                    "Gestión de clientes",
-                    "Órdenes de servicio",
-                    "Cotizaciones básicas",
-                    "Soporte por email",
-                  ],
-                  popular: false,
-                },
-                {
-                  name: "Profesional",
-                  description: "Perfecto para talleres en crecimiento",
-                  price: "$1,999",
-                  features: [
-                    "Hasta 5 usuarios",
-                    "Todas las características del plan Básico",
-                    "Inventario y control de stock",
-                    "Tablero Kanban",
-                    "Reportes básicos",
-                    "Facturación electrónica",
-                    "Soporte prioritario",
-                  ],
-                  popular: true,
-                },
-                {
-                  name: "Empresarial",
-                  description: "Para talleres con múltiples ubicaciones",
-                  price: "$3,999",
-                  features: [
-                    "Usuarios ilimitados",
-                    "Todas las características del plan Profesional",
-                    "Gestión multi-talleres",
-                    "Reportes avanzados",
-                    "API para integraciones",
-                    "Soporte 24/7",
-                    "Capacitación personalizada",
-                  ],
-                  popular: false,
-                },
-              ].map((plan) => (
-                <Card key={plan.name} className={`flex flex-col ${plan.popular ? "border-primary shadow-lg" : ""}`}>
-                  {plan.popular && (
-                    <div className="bg-primary py-1 text-center text-sm font-medium text-primary-foreground">
-                      Más popular
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold">{plan.name}</h3>
-                    <p className="text-muted-foreground">{plan.description}</p>
-                    <div className="mt-4 flex items-baseline text-5xl font-extrabold">
-                      {plan.price}
-                      <span className="ml-1 text-lg font-normal text-muted-foreground">/mes</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 p-6 pt-0">
-                    <ul className="space-y-3">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start">
-                          <CheckCircle className="mr-2 h-5 w-5 text-primary flex-shrink-0" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="p-6 pt-0">
-                    <Link href="/checkout/premium-plans" className="w-full">
-                      <Button className="w-full" variant={plan.popular ? "default" : "outline"}>
-                        Comenzar ahora
-                      </Button>
-                    </Link>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
+        <PricingSection />
 
         {/* Testimonials Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32" id="testimonios">
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">Testimonios</div>
-                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                  Lo que dicen nuestros clientes
-                </h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Descubre cómo AutoFlowX ha transformado la gestión de talleres automotrices en todo el país.
-                </p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-6 pt-12 md:grid-cols-2 lg:grid-cols-3">
-              {[
-                {
-                  name: "Carlos Rodríguez",
-                  role: "Dueño de Taller Mecánico Express",
-                  content:
-                    "Desde que implementamos AutoFlowX, hemos aumentado nuestra eficiencia en un 40%. La gestión de citas y órdenes de servicio es mucho más sencilla y nuestros clientes están más satisfechos.",
-                  avatar: "CR",
-                },
-                {
-                  name: "Ana Martínez",
-                  role: "Gerente de Servicio Automotriz Rápido",
-                  content:
-                    "El tablero Kanban ha revolucionado la forma en que organizamos nuestro trabajo. Ahora todos los técnicos saben exactamente qué hacer y en qué orden. La comunicación ha mejorado enormemente.",
-                  avatar: "AM",
-                },
-                {
-                  name: "Roberto Gómez",
-                  role: "Director de Red de Talleres AutoMaster",
-                  content:
-                    "Administrar 5 talleres solía ser un dolor de cabeza hasta que encontramos AutoFlowX. Ahora puedo ver el rendimiento de cada ubicación en tiempo real y tomar decisiones basadas en datos.",
-                  avatar: "RG",
-                },
-              ].map((testimonial, i) => (
-                <Card key={i} className="overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                        {testimonial.avatar}
-                      </div>
-                      <div>
-                        <p className="font-medium">{testimonial.name}</p>
-                        <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                      </div>
-                    </div>
-                    <div className="flex mb-4">
-                      {Array(5)
-                        .fill(null)
-                        .map((_, i) => (
-                          <svg
-                            key={i}
-                            className="h-4 w-4 fill-primary text-primary"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                          </svg>
-                        ))}
-                    </div>
-                    <p className="text-muted-foreground">{testimonial.content}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
+        <ReviewPage />
 
         {/* CTA Section */}
         <section className="w-full py-12 md:py-24 lg:py-32">

@@ -1,9 +1,20 @@
+'use client'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import PLANS_SERVICES, { PlansServicesType } from "@/services/PLANS_SERVICES.service"
 import { CheckCircle } from "lucide-react"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 export function PricingSection() {
+  const [State_Plans, SetState_Plans] = useState<PlansServicesType[]>([])
+  const FN_GETDATE = async () => {
+    const plans = await PLANS_SERVICES.PLANS();
+    SetState_Plans(plans)
+  }
+  useEffect(() => {
+    FN_GETDATE()
+  }, [])
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50" id="precios">
       <div className="container px-4 md:px-6">
@@ -19,51 +30,7 @@ export function PricingSection() {
           </div>
         </div>
         <div className="grid grid-cols-1 gap-6 pt-12 md:grid-cols-2 lg:grid-cols-3 xl:gap-8">
-          {[
-            {
-              name: "Básico",
-              description: "Ideal para talleres pequeños que están comenzando",
-              price: "$999",
-              features: [
-                "Hasta 2 usuarios",
-                "Gestión de clientes",
-                "Órdenes de servicio",
-                "Cotizaciones básicas",
-                "Soporte por email",
-              ],
-              popular: false,
-            },
-            {
-              name: "Profesional",
-              description: "Perfecto para talleres en crecimiento",
-              price: "$1,999",
-              features: [
-                "Hasta 5 usuarios",
-                "Todas las características del plan Básico",
-                "Inventario y control de stock",
-                "Tablero Kanban",
-                "Reportes básicos",
-                "Facturación electrónica",
-                "Soporte prioritario",
-              ],
-              popular: true,
-            },
-            {
-              name: "Empresarial",
-              description: "Para talleres con múltiples ubicaciones",
-              price: "$3,999",
-              features: [
-                "Usuarios ilimitados",
-                "Todas las características del plan Profesional",
-                "Gestión multi-talleres",
-                "Reportes avanzados",
-                "API para integraciones",
-                "Soporte 24/7",
-                "Capacitación personalizada",
-              ],
-              popular: false,
-            },
-          ].map((plan) => (
+          {State_Plans.map((plan) => (
             <Card key={plan.name} className={`flex flex-col ${plan.popular ? "border-primary shadow-lg" : ""}`}>
               {plan.popular && (
                 <div className="bg-primary py-1 text-center text-sm font-medium text-primary-foreground">
@@ -89,7 +56,7 @@ export function PricingSection() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Link href="/checkout/premium-plans" className="w-full">
+                <Link href={`/checkout/premium-plans?plan=${plan.id}`} className="w-full">
                   <Button className="w-full" variant={plan.popular ? "default" : "outline"}>
                     Comenzar ahora
                   </Button>
