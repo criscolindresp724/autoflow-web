@@ -25,9 +25,16 @@ const REVIEW_SERVICES = {
         });
         return res;
     },
-    async INSERT_REVIEW(data: ReviewInsertType): Promise<ReviewType[]> {
+    async GET_REVIEW_BY_USERID(user_id?: string): Promise<ReviewType[]> {
+        const res: ReviewType[] = await AxiosGet({
+            path: '/reviews?select=*,perfil_usuario(nombre, apellido, correo), talleres(nombre)&user_id=eq.' + user_id
+        });
+        return res;
+    },
+    async INSERT_REVIEW(data: Omit<ReviewInsertType, 'taller_id'>): Promise<ReviewType[]> {
+        const taller_id = localStorage.getItem("taller_id") || "";
         const res: ReviewType[] = await AxiosPost({
-            path: '/reviews', payload: data
+            path: '/reviews', payload: { ...data, taller_id }
         });
         return res;
     },

@@ -16,13 +16,33 @@ import { Badge } from "../ui/badge"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import paises from "./paises.json"
+import REVIEW_SERVICES, { ReviewType } from "@/services/REVIEWS_SERVICES.service"
+import { getSession } from "@/lib/auth"
+import StarRating from "../ui/StartsRating"
 export function ConfiguracionTaller() {
   const [config, setConfig] = useState<TallerType>({})
   const [State_Servicios, SetState_Servicios] = useState<ServicioType[]>([])
+  const [State_Review, SetState_Review] = useState<ReviewType>()
+  const [State_ReviewList, SetState_ReviewList] = useState<ReviewType[]>([])
   const [loading, setLoading] = useState(false)
   const [Cambios, SetCambios] = useState(false)
 
+
   const route = useRouter()
+
+  const FN_GET_MY_REVIEW = async () => {
+    const session = await getSession()
+    console.log(session)
+    const res = await REVIEW_SERVICES.GET_REVIEW_BY_USERID(session.user.id)
+    console.log(res)
+    SetState_ReviewList(res)
+  }
+
+  const FN_ENVIAR_REVIEW = async () => {
+    const session = await getSession()
+    await REVIEW_SERVICES.INSERT_REVIEW({ review: State_Review.review, starts: State_Review.starts, user_id: session.user.id })
+    await FN_GET_MY_REVIEW()
+  }
 
 
 
@@ -91,6 +111,7 @@ export function ConfiguracionTaller() {
   useEffect(() => {
     FN_GET_CONFIG()
     FN_GET_SERVICIOS()
+    FN_GET_MY_REVIEW()
   }, [])
   useEffect(() => {
     SetCambios(true)
@@ -117,6 +138,7 @@ export function ConfiguracionTaller() {
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="horarios">Horarios</TabsTrigger>
           <TabsTrigger value="servicios">Servicios</TabsTrigger>
+          <TabsTrigger value="reseña">Mi Reseña AutoflowX</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -294,6 +316,80 @@ export function ConfiguracionTaller() {
                               <Button size="sm">Agregar a Orden</Button>
                             </CardFooter> */}
                     </Card>
+                  ))
+                }
+              </div>
+
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="reseña">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wrench className="h-5 w-5" />
+                Mi reseña
+                <Button variant="outline" onClick={() => route.push('/reviews')} disabled={loading}>
+                  Ver las demas reseña
+                </Button>
+              </CardTitle>
+              <CardDescription>
+                Esta es tu reseña sobre el servicio de AutoflowX, tu reseña nos ayuda a mejorar nuestros servicios.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-6 items-center">
+
+                <div className="space-y-2">
+
+                  <Label htmlFor="horario_apertura">Reseña</Label>
+                  <Input
+                    id="Reseña"
+                    type="text"
+                    placeholder="Escribe una reseña sobre tu experiencia en AutoflowX"
+                    value={State_Review?.review || ""}
+                    onChange={(e) => SetState_Review({ ...State_Review, review: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+
+
+                  <Label htmlFor="horario_apertura">Reseña</Label>
+                  <StarRating max={5} value={State_Review?.starts || 3} onChange={(value) => SetState_Review({ ...State_Review, starts: value })} />
+                </div>
+                <Button onClick={FN_ENVIAR_REVIEW}>Enviar Reseña</Button>
+
+                {
+                  State_ReviewList.map((review) => (
+                    <Card key={1} className="overflow-hidden">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                            {review.perfil_usuario.nombre.slice(0, 1).toUpperCase()} {review.perfil_usuario.apellido.slice(0, 1).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-medium">{review.perfil_usuario.nombre} {review.perfil_usuario.apellido}</p>
+                            <p className="text-sm text-muted-foreground">taller {review.talleres.nombre}</p>
+                          </div>
+                        </div>
+                        <div className="flex mb-4">
+                          {Array(review.starts)
+                            .fill(null)
+                            .map((_, i) => (
+                              <svg
+                                key={i}
+                                className="h-4 w-4 fill-primary text-primary"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                              </svg>
+                            ))}
+                        </div>
+                        <p className="text-muted-foreground">{review.review}</p>
+                      </CardContent>
+                    </Card>
+
                   ))
                 }
               </div>

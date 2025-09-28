@@ -319,7 +319,7 @@ export default function Home() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/contacto">
+                <Link href="/contactar-ventas">
                   <Button size="lg" variant="outline">
                     Contactar a ventas
                   </Button>
