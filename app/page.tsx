@@ -299,6 +299,14 @@ export default function Home() {
 
         {/* Testimonials Section */}
         <ReviewComponent limit={9} />
+        <aside className="w-full grid justify-center">
+
+        <Link href="/reviews">
+          <Button size="lg" variant="outline">
+            Ver todas las reseñas
+          </Button>
+        </Link>
+        </aside>
 
         {/* CTA Section */}
         <section className="w-full py-12 md:py-24 lg:py-32">
