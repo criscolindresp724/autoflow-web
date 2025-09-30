@@ -15,7 +15,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-black">Iniciar sesión</h1>
           <p className="text-sm text-muted-foreground">Ingresa tus credenciales para acceder al sistema</p>
         </div>
-        <SupabaseConnectionStatus />
+        {/* <SupabaseConnectionStatus /> */}
         <LoginForm />
       </div>
     </div>

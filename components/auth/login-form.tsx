@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Loader2, AlertCircle, ChevronDown, ChevronUp } from "lucide-react"
 import USER_SERVICE from "@/services/USER_SERVICES.SERVICE"
+import { toast } from "sonner"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("")
@@ -45,6 +46,7 @@ export default function LoginForm() {
       console.log("Usuario Roles ===========>:", data.user?.user_metadata?.role)
       // Redirigir según el rol del usuario (esto se puede personalizar)
       // return router.push("/aseguradora/dashboard")
+      toast.success('Has iniciado sesión correctamente✅')
       if (data.user?.user_metadata?.role === "admin") {
         router.push("/admin/dashboard")
       } else if (data.user?.user_metadata?.role === "cliente") {
@@ -62,35 +64,7 @@ export default function LoginForm() {
     } catch (err: any) {
       console.error("Error completo:", err)
 
-      // Mejorar el mensaje de error para el usuario
-      let userMessage = "Error al iniciar sesión. Por favor, inténtalo de nuevo."
-
-      if (err.message) {
-        if (err.message.includes("Invalid login credentials")) {
-          userMessage = "Credenciales inválidas. Verifica tu correo y contraseña."
-        } else if (err.message.includes("fetch failed")) {
-          userMessage = "Error de conexión. Verifica tu conexión a internet o inténtalo más tarde."
-        } else {
-          userMessage = err.message
-
-        }
-      }
-
-      setError(userMessage)
-
-      // Guardar detalles técnicos para depuración
-      setErrorDetails(
-        JSON.stringify(
-          {
-            message: err.message,
-            name: err.name,
-            stack: err.stack,
-            cause: err.cause,
-          },
-          null,
-          2,
-        ),
-      )
+      return toast.error('Credenciales inválidas. Verifica tu correo y contraseña.')
     } finally {
       setLoading(false)
     }
@@ -103,33 +77,7 @@ export default function LoginForm() {
         <p className="text-gray-500">Ingresa tus credenciales para acceder al sistema</p>
       </div>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription className="flex flex-col gap-2">
-            <p>{error}</p>
 
-            {errorDetails && (
-              <div className="mt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowDetails(!showDetails)}
-                  className="flex items-center gap-1 mb-2"
-                >
-                  {showDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                  {showDetails ? "Ocultar detalles técnicos" : "Mostrar detalles técnicos"}
-                </Button>
-
-                {showDetails && (
-                  <pre className="bg-gray-800 text-white p-2 rounded text-xs overflow-x-auto">{errorDetails}</pre>
-                )}
-              </div>
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-2">

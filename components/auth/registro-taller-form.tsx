@@ -6,18 +6,16 @@ import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { Loader2, CheckCircle } from "lucide-react"
-
+import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/lib/supabase/auth"
-import axios from "axios"
+import { toast } from "sonner"
 
 const formSchema = z.object({
   nombre_taller: z.string().min(3, {
@@ -124,8 +122,6 @@ const modulos = [
 export function RegistroTallerForm() {
   const { signUpTaller } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("informacion")
   const router = useRouter()
 
@@ -164,8 +160,6 @@ export function RegistroTallerForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    setError(null)
-    setSuccess(null)
 
     try {
       const DataSolicitudTaller = {
@@ -183,69 +177,24 @@ export function RegistroTallerForm() {
       console.log(DataSolicitudTaller)
       // Registrar el usuario en Supabase
       const { success, error } = await signUpTaller(values.email, values.password, values.nombre_contacto, values.apellido_contacto, values.telefono, DataSolicitudTaller)
-      if (!success) return alert(error)
 
-      // Enviar la solicitud de registro del taller
-      // const response = await axios.post("/api/registro-taller", {
-      //   nombre_taller: values.nombre_taller,
-      //   direccion: values.direccion,
-      //   ciudad: values.ciudad,
-      //   estado: values.estado,
-      //   codigo_postal: values.codigo_postal,
-      //   nombre_contacto: values.nombre_contacto,
-      //   telefono: values.telefono,
-      //   email: values.email,
-      //   descripcion: values.descripcion,
-      //   modulos: modulosSeleccionados,
-      // },
-      //   {
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //   }
-      // )
-      // const response = await fetch("/api/registro-taller", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     nombre_taller: values.nombre_taller,
-      //     direccion: values.direccion,
-      //     ciudad: values.ciudad,
-      //     estado: values.estado,
-      //     codigo_postal: values.codigo_postal,
-      //     nombre_contacto: values.nombre_contacto,
-      //     telefono: values.telefono,
-      //     email: values.email,
-      //     descripcion: values.descripcion,
-      //     modulos: modulosSeleccionados,
-      //   }),
-      // })
-      // console.log(response)
+      if (!success) return toast.error(error)
 
-      // if (!response.ok) {
-      //   const data = await response.json()
-      //   throw new Error(data.error || "Error al registrar el taller")
-      // }
-
-      setSuccess(
-        "¡Registro exitoso! Tu solicitud ha sido enviada y será revisada por nuestro equipo. Te notificaremos por correo electrónico cuando tu cuenta esté activada.",
-      )
+      toast.success('¡Registro exitoso! Tu solicitud ha sido enviada y será revisada por nuestro equipo. Te notificaremos por correo electrónico cuando tu cuenta esté activada.')
 
       // Redirigir después de 5 segundos
       setTimeout(() => {
         router.push("/auth/login")
       }, 5000)
     } catch (error) {
-      console.error("Error en el formulario de registro:", error)
-      setError(error instanceof Error ? error.message : "Error al registrar taller")
+      toast.error(error.message)
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleNextTab = () => {
+    console.log('ejecuta')
     if (activeTab === "informacion") {
       // Validar campos de la primera pestaña
       form.trigger([
@@ -296,20 +245,8 @@ export function RegistroTallerForm() {
     <main className="">
 
       <div className="grid gap-6">
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
 
-        {success && (
-          <Alert>
-            <CheckCircle className="h-4 w-4 mr-2" />
-            <AlertDescription>{success}</AlertDescription>
-          </Alert>
-        )}
-
-        <Form {...form} >
+        <Form {...form}  >
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-3">
@@ -319,7 +256,7 @@ export function RegistroTallerForm() {
               </TabsList>
 
               <TabsContent value="informacion" className="space-y-4 pt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
                     name="nombre_taller"
@@ -346,21 +283,21 @@ export function RegistroTallerForm() {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="direccion"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Dirección</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Av. Principal #123" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="direccion"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Dirección</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Av. Principal #123" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
