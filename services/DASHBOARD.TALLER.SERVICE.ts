@@ -1,10 +1,18 @@
 import { AxiosGet } from "./AxiosServices.module";
 
 
+type ResCabeceraDashboardType = {
+    taller_id: string;
+    ordenes_pendientes: number;
+    citas_pendientes: number;
+    ingresos_mes_actual: number;
+    tecnicos_disponibles: number;
+};
 export type CabeceraDashboardType = {
-    tipo: string;
-    cantidad: number;
-    porcentaje_comparacion_mes_pasado: number | null;
+    ordenes_pendientes: number;
+    citas_pendientes: number;
+    ingresos_mes_actual: number;
+    tecnicos_disponibles: number;
 };
 
 export type RendimientoOrdenesSemanalesType = {
@@ -31,11 +39,18 @@ export type RendimientoTecnicoType = {
     tiempo_promedio_hora: number;
     ordenes_completadas: number;
 };
+export type IngresosMensualesType = {
+    taller_id: string;
+    mes: string;
+    total: number;
+}
 const DASHBOARD_TALLER_SERVICES = {
-    async GET_CABECERA(): Promise<CabeceraDashboardType[]> {
+    async GET_CABECERA(): Promise<CabeceraDashboardType> {
         const taller_id = localStorage.getItem("taller_id") || "";
-        const data: CabeceraDashboardType[] = await AxiosGet({ path: '/vista_cabecera_dashboard' })
-        return data;
+        const data: ResCabeceraDashboardType[] = await AxiosGet({ path: '/vista_cabecera_dashboard?select=*&taller_id=eq.' + taller_id })
+        const res = data[0]
+        delete res.taller_id
+        return data[0];
     },
     async GET_RENDIMIENTO_ORDENES_SEMANALES(): Promise<RendimientoOrdenesSemanalesType[]> {
         const taller_id = localStorage.getItem("taller_id") || "";
@@ -61,6 +76,11 @@ const DASHBOARD_TALLER_SERVICES = {
     async GET_RENDIMIENTO_DE_TECNICOS(): Promise<RendimientoTecnicoType[]> {
         const taller_id = localStorage.getItem("taller_id") || "";
         const data: RendimientoTecnicoType[] = await AxiosGet({ path: '/vista_rendimiento_tecnicos' })
+        return data;
+    },
+    async GET_INGRESOS_MENSUALES(): Promise<IngresosMensualesType[]> {
+        const taller_id = localStorage.getItem("taller_id") || "";
+        const data: IngresosMensualesType[] = await AxiosGet({ path: '/vista_ingresos_facturas_por_mes?select=*&taller_id=eq.' + taller_id })
         return data;
     },
 

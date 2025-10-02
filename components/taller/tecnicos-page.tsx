@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { Search, Filter, Plus, Calendar, Star, Clock, MoreHorizontal, Phone, Mail, Edit, Trash2 } from "lucide-react"
+import { Search, Filter, Calendar, Star, Clock, MoreHorizontal, Phone, Mail, Edit, Trash2 } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,19 +25,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import TECNICO_SERVICES, { TecnicoCertificacionType, TecnicoConDetallesType, TecnicoHabilidadType, TecnicoHorarioType } from "@/services/TECNICO_SERVICES.SERVICE"
+import Form_Nuevo_Tecnico from "./Form_Nuevo_Tecnico"
 
 export function TecnicosPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [tecnicos, setTecnicos] = useState<any[]>([])
   const [State_Tecnicos, SetState_Tecnicos] = useState<TecnicoConDetallesType[]>([])
-  const [openDialog, setOpenDialog] = useState(false)
   const [openPerfilDialog, setOpenPerfilDialog] = useState(false)
   const [openHorarioDialog, setOpenHorarioDialog] = useState(false)
   const [OpenEditHorarioDialog, SetOpenEditHorarioDialog] = useState(false)
@@ -69,16 +66,6 @@ export function TecnicosPage() {
     SetState_Tecnicos(data)
   }
 
-
-  // const saveTecnicos = (newTecnicos: any[]) => {
-  //   setTecnicos(newTecnicos)
-  //   try {
-  //     localStorage.setItem("mockTecnicos", JSON.stringify(newTecnicos))
-  //   } catch (error) {
-  //     console.error("Error guardando en localStorage:", error)
-  //   }
-  // }
-
   const getAvailabilityColor = (status: boolean) => {
     switch (status) {
       case true:
@@ -95,94 +82,6 @@ export function TecnicosPage() {
       tecnico.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tecnico.area.toLowerCase().includes(searchTerm.toLowerCase()),
   )
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    const horario = {
-      lunes: "8:00-17:00",
-      martes: "8:00-17:00",
-      miercoles: "8:00-17:00",
-      jueves: "8:00-17:00",
-      viernes: "8:00-17:00",
-      sabado: "8:00-12:00",
-      domingo: "Descanso",
-    }
-    const habilidades: string[] = formData.habilidades.split(",").map((h) => h.trim());
-    const certificaciones: string[] = formData.certificaciones.split(",").map((c) => c.trim());
-    // const nuevoTecnico = {
-    //   id: Date.now(),
-    //   nombre: formData.nombre,
-    //   especialidad: formData.especialidad,
-    //   experiencia: formData.experiencia,
-    //   telefono: formData.telefono,
-    //   email: formData.email,
-    //   direccion: formData.direccion,
-    //   habilidades: formData.habilidades.split(",").map((h) => h.trim()),
-    //   certificaciones: formData.certificaciones.split(",").map((c) => c.trim()),
-    //   disponibilidad: formData.disponibilidad,
-    //   calificacion: 4.0,
-    //   ordenes_completadas: 0,
-    //   foto: `/placeholder.svg?height=100&width=100&text=${formData.nombre
-    //     .split(" ")
-    //     .map((n) => n[0])
-    //     .join("")}`,
-    //   horario: {
-    //     lunes: "8:00-17:00",
-    //     martes: "8:00-17:00",
-    //     miercoles: "8:00-17:00",
-    //     jueves: "8:00-17:00",
-    //     viernes: "8:00-17:00",
-    //     sabado: "8:00-12:00",
-    //     domingo: "Descanso",
-    //   },
-    // }
-    const horarioArray = Object.entries(horario).map(([dia, horario]) => ({
-      // tecnico_id,
-      dia: dia.charAt(0).toUpperCase() + dia.slice(1), // Capitaliza el día
-      horario,
-    }));
-    const res = await TECNICO_SERVICES.INSERT_TECNICO({
-      info: {
-        nombre: formData.nombre,
-        apellido: formData.apellido,
-        area: formData.especialidad,
-        cant_ordenes_completadas: 0,
-        cargo: formData.cargo,
-        direccion: formData.direccion,
-        disponible: true,
-        email: formData.email,
-        telefono: formData.telefono,
-        tiempo_experciencia: formData.experiencia,
-        calificacion: 5.5
-      },
-      habilidades: habilidades,
-      horarios: horarioArray,
-      certificaciones,
-      password: formData.password
-    })
-    console.log(res)
-    if (res.error) return (alert(res.error), setIsLoading(false))
-    await FN_GET_TECNICOS()
-    setFormData({
-      nombre: "",
-      apellido: "",
-      especialidad: "",
-      cargo: "",
-      experiencia: "",
-      telefono: "",
-      email: "",
-      direccion: "",
-      habilidades: "",
-      certificaciones: "",
-      disponibilidad: "Disponible",
-      password: "123456"
-
-    })
-
-    setOpenDialog(false)
-    setIsLoading(false)
-  }
 
   const handleEdit = (tecnicoData: TecnicoConDetallesType) => {
     setSelectedTecnico(tecnicoData)
@@ -292,34 +191,8 @@ export function TecnicosPage() {
   }
 
   const handleCambiarDisponibilidad = (tecnico: any, nuevaDisponibilidad: string) => {
-    const updatedTecnicos = tecnicos.map((t: any) =>
-      t.id === tecnico.id ? { ...t, disponibilidad: nuevaDisponibilidad } : t,
-    )
-
-    // saveTecnicos(updatedTecnicos)
-
-    toast({
-      title: "Disponibilidad actualizada",
-      description: `${tecnico.nombre} ahora está ${nuevaDisponibilidad.toLowerCase()}`,
-    })
+    alert('disponibiliddad')
   }
-  const FN_RESET_FORM = () => {
-    setFormData({
-      nombre: "",
-      apellido: "",
-      especialidad: "",
-      cargo: "",
-      experiencia: "",
-      telefono: "",
-      email: "",
-      direccion: "",
-      habilidades: "",
-      certificaciones: "",
-      disponibilidad: "Disponible",
-      password: "123456"
-    })
-  }
-
   useEffect(() => {
     FN_GET_TECNICOS()
   }, [])
@@ -329,7 +202,7 @@ export function TecnicosPage() {
         <div>
           <h1 className="text-3xl font-bold">Gestión de Técnicos</h1>
           <p className="text-muted-foreground">
-            Administra el equipo técnico del taller (Mock Data Local - {tecnicos.length} técnicos)
+            Administra el equipo técnico del taller ({State_Tecnicos.length} técnicos)
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -346,163 +219,7 @@ export function TecnicosPage() {
           <Button variant="outline" size="icon" className="rounded-full">
             <Filter className="h-4 w-4" />
           </Button>
-          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-            <DialogTrigger asChild>
-              <Button className="rounded-full" onClick={FN_RESET_FORM}>
-                <Plus className="mr-2 h-4 w-4" /> Nuevo Técnico
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[600px] h-[100vh] overflow-auto">
-              <DialogHeader>
-                <DialogTitle>Agregar Nuevo Técnico</DialogTitle>
-                <DialogDescription>Complete los datos para agregar un nuevo técnico al equipo.</DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit}>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="nombre">Nombre</Label>
-                      <Input
-                        id="nombre"
-                        placeholder="Nombre y apellidos"
-                        value={formData.nombre}
-                        onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="apellido">Apeliidos</Label>
-                      <Input
-                        id="apellido"
-                        placeholder="Nombre y apellidos"
-                        value={formData.apellido}
-                        onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
-                        required
-                      />
-                    </div>
-
-
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="especialidad">Especialidad</Label>
-                      <Select
-                        value={formData.cargo}
-                        onValueChange={(value) => setFormData({ ...formData, cargo: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar especialidad" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Técnico Senior">Técnico Senior</SelectItem>
-                          <SelectItem value="Técnico">Técnico</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="especialidad">Especialidad</Label>
-                      <Select
-                        value={formData.especialidad}
-                        onValueChange={(value) => setFormData({ ...formData, especialidad: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar especialidad" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Mecánica General">Mecánica General</SelectItem>
-                          <SelectItem value="Electrónica Automotriz">Electrónica Automotriz</SelectItem>
-                          <SelectItem value="Carrocería y Pintura">Carrocería y Pintura</SelectItem>
-                          <SelectItem value="Diagnóstico">Diagnóstico</SelectItem>
-                          <SelectItem value="Transmisiones">Transmisiones</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="experiencia">Experiencia</Label>
-                      <Input
-                        id="experiencia"
-                        placeholder="Ej: 5 años"
-                        value={formData.experiencia}
-                        onChange={(e) => setFormData({ ...formData, experiencia: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="telefono">Teléfono</Label>
-                      <Input
-                        id="telefono"
-                        placeholder="Número de teléfono"
-                        value={formData.telefono}
-                        onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Correo Electrónico</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Correo electrónico"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="Password">Contraseña</Label>
-                      <Input
-                        id="Password"
-                        type="text"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="direccion">Dirección</Label>
-                      <Input
-                        id="direccion"
-                        placeholder="Dirección"
-                        value={formData.direccion}
-                        onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="habilidades">Habilidades</Label>
-                    <Textarea
-                      id="habilidades"
-                      placeholder="Habilidades separadas por comas"
-                      value={formData.habilidades}
-                      onChange={(e) => setFormData({ ...formData, habilidades: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="certificaciones">Certificaciones</Label>
-                    <Textarea
-                      id="certificaciones"
-                      placeholder="Certificaciones separadas por comas"
-                      value={formData.certificaciones}
-                      onChange={(e) => setFormData({ ...formData, certificaciones: e.target.value })}
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setOpenDialog(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading ? "Guardando..." : "Guardar Técnico"}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Form_Nuevo_Tecnico onSuccess={FN_GET_TECNICOS} />
         </div>
       </div>
 

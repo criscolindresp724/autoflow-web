@@ -38,15 +38,16 @@ import {
   Activity,
   Plus,
 } from "lucide-react"
-import DASHBOARD_TALLER_SERVICES, { CabeceraDashboardType, DistribucionEspecialidadType, EstadoOrdenType, RendimientoOrdenesSemanalesType, RendimientoTecnicoType, TipoOrdenPorcentajeType } from "@/services/DASHBOARD.TALLER.SERVICE"
+import DASHBOARD_TALLER_SERVICES, { CabeceraDashboardType, DistribucionEspecialidadType, EstadoOrdenType, IngresosMensualesType, RendimientoOrdenesSemanalesType, RendimientoTecnicoType, TipoOrdenPorcentajeType } from "@/services/DASHBOARD.TALLER.SERVICE"
 import ORDENES_TRABAJO_SERVICES, { OrdenTrabajoType } from "@/services/ORDENES.SERVICE"
 import CITAS_SERVICES, { CitasDetalleType } from "@/services/CITAS.SERVICE"
 import Form_NuevaCita from "./Form_Nueva_CIta"
 import TECNICO_SERVICES, { TecnicoType } from "@/services/TECNICO_SERVICES.SERVICE"
+import Form_Nuevo_Tecnico from "./Form_Nuevo_Tecnico"
 
 export function TallerDashboard() {
   const [activeChart, setActiveChart] = useState<"bar" | "pie" | "line">("bar")
-  const [State_Cabecera, SetState_Cabecera] = useState<CabeceraDashboardType[]>([])
+  const [State_Cabecera, SetState_Cabecera] = useState<CabeceraDashboardType>({ citas_pendientes: 0, ingresos_mes_actual: 0, ordenes_pendientes: 0, tecnicos_disponibles: 0 })
   const [State_CitasProgramadasRecientes, SetState_CitasProgramadasRecientes] = useState<CitasDetalleType[]>([])
   const [State_DistribucionEspecialidades, SetState_DistribucionEspecialidades] = useState<DistribucionEspecialidadType[]>([])
   const [State_EstadoOrdenes, SetState_EstadoOrdenes] = useState<EstadoOrdenType[]>([])
@@ -56,16 +57,8 @@ export function TallerDashboard() {
   const [State_RendimientoTecnicos, SetState_RendimientoTecnicos] = useState<RendimientoTecnicoType[]>([])
   const [State_RendimientoOrdenesSemanales, SetState_RendimientoOrdenesSemanales] = useState<RendimientoOrdenesSemanalesType[]>([])
   const [State_ListaDeTecnicos, SetState_ListaDeTecnicos] = useState<TecnicoType[]>([])
+  const [State_IngresosMensuales, SetState_IngresosMensuales] = useState<IngresosMensualesType[]>([])
   const MesYearActual = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(new Date()) + " " + new Date().getFullYear()
-  // Datos de ejemplo para los gráficos
-  const revenueData = [
-    { name: "Ene", value: 12500 },
-    { name: "Feb", value: 15000 },
-    { name: "Mar", value: 18000 },
-    { name: "Abr", value: 16000 },
-    { name: "May", value: 21000 },
-    { name: "Jun", value: 19500 },
-  ]
 
   const serviceTypeData = [
     { name: "Mantenimiento", value: 35 },
@@ -77,147 +70,6 @@ export function TallerDashboard() {
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
 
-  const ordersData = [
-    { name: "Lun", completadas: 5, pendientes: 3 },
-    { name: "Mar", completadas: 7, pendientes: 4 },
-    { name: "Mié", completadas: 6, pendientes: 2 },
-    { name: "Jue", completadas: 8, pendientes: 5 },
-    { name: "Vie", completadas: 10, pendientes: 3 },
-    { name: "Sáb", completadas: 4, pendientes: 1 },
-    { name: "Dom", completadas: 2, pendientes: 0 },
-  ]
-
-  // Datos de órdenes recientes
-  const recentOrders = [
-    {
-      id: "ORD-1001",
-      cliente: "Juan Pérez",
-      vehiculo: "Toyota Corolla",
-      fecha: "10/05/2024",
-      estado: "En proceso",
-      total: "$1,250",
-    },
-    {
-      id: "ORD-1002",
-      cliente: "María Rodríguez",
-      vehiculo: "Honda Civic",
-      fecha: "08/05/2024",
-      estado: "Pendiente",
-      total: "$850",
-    },
-    {
-      id: "ORD-1003",
-      cliente: "Carlos Gómez",
-      vehiculo: "Nissan Sentra",
-      fecha: "05/05/2024",
-      estado: "Completada",
-      total: "$2,100",
-    },
-  ]
-
-  // Datos de citas pendientes
-  const pendingAppointments = [
-    {
-      id: "CIT-1001",
-      cliente: "Ana Martínez",
-      vehiculo: "Volkswagen Golf",
-      fecha: "15/05/2024",
-      hora: "10:00 AM",
-      servicio: "Mantenimiento",
-    },
-    {
-      id: "CIT-1002",
-      cliente: "Roberto Sánchez",
-      vehiculo: "Ford Focus",
-      fecha: "16/05/2024",
-      hora: "11:30 AM",
-      servicio: "Diagnóstico",
-    },
-    {
-      id: "CIT-1003",
-      cliente: "Laura Torres",
-      vehiculo: "Chevrolet Spark",
-      fecha: "16/05/2024",
-      hora: "3:00 PM",
-      servicio: "Cambio de aceite",
-    },
-    {
-      id: "CIT-1004",
-      cliente: "Pedro Ramírez",
-      vehiculo: "Mazda 3",
-      fecha: "17/05/2024",
-      hora: "9:15 AM",
-      servicio: "Revisión de frenos",
-    },
-    {
-      id: "CIT-1005",
-      cliente: "Sofía Vargas",
-      vehiculo: "Kia Rio",
-      fecha: "17/05/2024",
-      hora: "2:45 PM",
-      servicio: "Alineación y balanceo",
-    },
-  ]
-
-  // Datos de técnicos
-  const technicians = [
-    {
-      id: "TEC-001",
-      nombre: "Miguel Ángel Pérez",
-      especialidad: "Mecánica general",
-      estado: "Disponible",
-      ordenes_asignadas: 2,
-    },
-    {
-      id: "TEC-002",
-      nombre: "Fernando Gutiérrez",
-      especialidad: "Electricidad",
-      estado: "Ocupado",
-      ordenes_asignadas: 3,
-    },
-    {
-      id: "TEC-003",
-      nombre: "Alejandro Morales",
-      especialidad: "Pintura",
-      estado: "Disponible",
-      ordenes_asignadas: 1,
-    },
-    {
-      id: "TEC-004",
-      nombre: "Ricardo Vega",
-      especialidad: "Enderezado",
-      estado: "Disponible",
-      ordenes_asignadas: 0,
-    },
-    {
-      id: "TEC-005",
-      nombre: "José Luis Mendoza",
-      especialidad: "Mecánica general",
-      estado: "Ocupado",
-      ordenes_asignadas: 2,
-    },
-    {
-      id: "TEC-006",
-      nombre: "Eduardo Campos",
-      especialidad: "Diagnóstico",
-      estado: "Disponible",
-      ordenes_asignadas: 1,
-    },
-    {
-      id: "TEC-007",
-      nombre: "Gabriel Rojas",
-      especialidad: "Electricidad",
-      estado: "Disponible",
-      ordenes_asignadas: 1,
-    },
-    {
-      id: "TEC-008",
-      nombre: "Daniel Flores",
-      especialidad: "Mecánica general",
-      estado: "Ocupado",
-      ordenes_asignadas: 2,
-    },
-  ]
 
   // Función para obtener el color del estado
   const getStatusColor = (status: string) => {
@@ -264,11 +116,17 @@ export function TallerDashboard() {
     SetState_OrdenesEnActivasEnProceso(res9)
     const res10 = await TECNICO_SERVICES.GET_ALL_TECNICOS();
     SetState_ListaDeTecnicos(res10)
+    const res11 = await DASHBOARD_TALLER_SERVICES.GET_INGRESOS_MENSUALES();
+    SetState_IngresosMensuales(res11)
   }
 
   const FN_GEL_ALL_CITAS_PROGRAMADAS = async () => {
     const res2 = await CITAS_SERVICES.GET_ALL_CITAS_PROGRAMADAS_RECIENTES();
     SetState_CitasProgramadasRecientes(res2)
+  }
+  const FN_GET_ALL_TECNICOS = async () => {
+    const res10 = await TECNICO_SERVICES.GET_ALL_TECNICOS();
+    SetState_ListaDeTecnicos(res10)
   }
   useEffect(() => {
     FN_GET_ALL_DATA()
@@ -293,74 +151,35 @@ export function TallerDashboard() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         {
-          State_Cabecera.map(dat => (
-            <Card key={dat.tipo} className="dashboard-card">
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">{dat.tipo}</CardTitle>
-                <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{dat.cantidad}</div>
-                <p className="text-xs text-muted-foreground">
-                  {dat.porcentaje_comparacion_mes_pasado} <ChevronUp className="h-4 w-4 inline text-green-500" /> desde el mes pasado
-                </p>
-                <Progress value={75} className="h-1 mt-2" />
-              </CardContent>
-            </Card>
-          ))
+          Object.entries(State_Cabecera).map(([key, value]) => {
+            const formatoUSD = new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 2, // siempre 2 decimales
+              maximumFractionDigits: 2
+            }).format(value);
+
+            return (
+
+              <Card key={key} className="dashboard-card">
+                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                  <CardTitle className="text-sm font-medium">{key}</CardTitle>
+                  <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{key === 'ingresos_mes_actual' ? formatoUSD : value}</div>
+                  <p className="text-xs text-muted-foreground">
+
+                    <ChevronUp className="h-4 w-4 inline text-green-500" /> Estadistica mes actual {(new Date().toLocaleString('es-ES', { month: 'long' })).toUpperCase()}
+                  </p>
+                  <Progress value={75} className="h-1 mt-2" />
+                </CardContent>
+              </Card>
+            )
+          }
+          )
         }
-        {/* <Card className="dashboard-card">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Órdenes Activas</CardTitle>
-            <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              +12% <ChevronUp className="h-4 w-4 inline text-green-500" /> desde el mes pasado
-            </p>
-            <Progress value={75} className="h-1 mt-2" />
-          </CardContent>
-        </Card>
-        <Card className="dashboard-card">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$45,231</div>
-            <p className="text-xs text-muted-foreground">
-              +8% <ChevronUp className="h-4 w-4 inline text-green-500" /> desde el mes pasado
-            </p>
-            <Progress value={65} className="h-1 mt-2" />
-          </CardContent>
-        </Card>
-        <Card className="dashboard-card">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Citas Pendientes</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">
-              -3% <ChevronDown className="h-4 w-4 inline text-red-500" /> desde el mes pasado
-            </p>
-            <Progress value={45} className="h-1 mt-2" />
-          </CardContent>
-        </Card>
-        <Card className="dashboard-card">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Técnicos Disponibles</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">
-              +5% <ChevronUp className="h-4 w-4 inline text-green-500" /> de capacidad
-            </p>
-            <Progress value={85} className="h-1 mt-2" />
-          </CardContent>
-        </Card> */}
+
       </div>
 
       <Tabs defaultValue="general" className="space-y-4">
@@ -418,23 +237,23 @@ export function TallerDashboard() {
                 <div className="h-[300px]">
                   {activeChart === "bar" && (
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={revenueData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <BarChart data={State_IngresosMensuales} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
+                        <XAxis dataKey="mes" />
                         <YAxis />
                         <Tooltip formatter={(value) => [`$${value}`, "Ingresos"]} />
-                        <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   )}
                   {activeChart === "line" && (
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={revenueData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <LineChart data={State_IngresosMensuales} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
+                        <XAxis dataKey="mes" />
                         <YAxis />
                         <Tooltip formatter={(value) => [`$${value}`, "Ingresos"]} />
-                        <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} />
+                        <Line type="monotone" dataKey="total" stroke="#3b82f6" strokeWidth={2} />
                       </LineChart>
                     </ResponsiveContainer>
                   )}
@@ -935,10 +754,7 @@ export function TallerDashboard() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Nuevo Técnico
-                </Button>
+                <Form_Nuevo_Tecnico onSuccess={FN_GET_ALL_TECNICOS} />
               </CardFooter>
             </Card>
           </div>

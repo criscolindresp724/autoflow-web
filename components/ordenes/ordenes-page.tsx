@@ -2,22 +2,11 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { MainNav } from "@/components/main-nav"
-import { ModeToggle } from "@/components/mode-toggle"
-import { UserNav } from "@/components/user-nav"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Search, Filter, FileText, Eye, Edit, Trash2, Clock, User, Car } from "lucide-react"
+import { Search, Filter, FileText, Eye, Edit, Trash2, Clock, User, Car } from "lucide-react"
 import { useState, useEffect } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { NuevaOrdenForm } from "./nueva-orden-form"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
@@ -35,43 +24,25 @@ import ORDENES_TRABAJO_SERVICES, { OrdenTrabajoType } from "@/services/ORDENES.S
 
 export function OrdenesPage() {
   const [State_OrdenesTrabajo, SetState_OrdenesTrabajo] = useState<OrdenTrabajoType[]>([])
-  const [open, setOpen] = useState(false)
+
+  const [OpenFormNuevaOrden, setOpenFormNuevaOrden] = useState<boolean>(false)
   const [editingOrden, setEditingOrden] = useState<OrdenTrabajoType | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [ordenToDelete, setOrdenToDelete] = useState<OrdenTrabajoType | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const { toast } = useToast()
-
   const FN_GET_ALL_ORDENES_TRABAJO = async () => {
     const data = await ORDENES_TRABAJO_SERVICES.GET_ALL_ORDENES();
     SetState_OrdenesTrabajo(data)
 
   }
-
-  const generateOrderNumber = () => {
-    const year = new Date().getFullYear()
-    const orderCount = State_OrdenesTrabajo.length + 1
-    return `ORD-${year}-${orderCount.toString().padStart(3, "0")}`
-  }
-
   const FN_ADD_NEW_ORDEN = async (nuevaOrden: OrdenTrabajoType) => {
     await FN_GET_ALL_ORDENES_TRABAJO()
-    setOpen(false)
-    toast({
-      title: "Orden creada",
-      description: "La orden de trabajo ha sido creada exitosamente",
-    })
   }
 
   const FN_UPDATE_ORDEN = async (orden: OrdenTrabajoType) => {
     await FN_GET_ALL_ORDENES_TRABAJO()
     setEditingOrden(null)
-    setOpen(false)
-
-    toast({
-      title: "Orden actualizada",
-      description: "Los datos de la orden han sido actualizados exitosamente",
-    })
   }
 
   const FN_DELETE_ORDEN = async () => {
@@ -89,7 +60,7 @@ export function OrdenesPage() {
 
   const openEditDialog = (orden: OrdenTrabajoType) => {
     setEditingOrden(orden)
-    setOpen(true)
+    setOpenFormNuevaOrden(true)
   }
 
   const openDeleteDialog = (orden: OrdenTrabajoType) => {
@@ -149,27 +120,12 @@ export function OrdenesPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight">Órdenes de Trabajo</h1>
           <div className="flex items-center gap-2">
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <Button onClick={() => setEditingOrden(null)}>
-                  <Plus className="mr-2 h-4 w-4" /> Nueva Orden
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[800px]">
-                <DialogHeader>
-                  <DialogTitle>{editingOrden ? "Editar Orden de Trabajo" : "Nueva Orden de Trabajo"}</DialogTitle>
-                  <DialogDescription>
-                    {editingOrden
-                      ? "Modifica la información de la orden de trabajo."
-                      : "Crea una nueva orden de trabajo para un cliente."}
-                  </DialogDescription>
-                </DialogHeader>
-                <NuevaOrdenForm
-                  onSubmit={editingOrden ? FN_UPDATE_ORDEN : FN_ADD_NEW_ORDEN}
-                  ordenExistente={editingOrden}
-                />
-              </DialogContent>
-            </Dialog>
+            <NuevaOrdenForm
+              openDialog={OpenFormNuevaOrden}
+              setOpenDialog={setOpenFormNuevaOrden}
+              onSubmit={editingOrden ? FN_UPDATE_ORDEN : FN_ADD_NEW_ORDEN}
+              ordenExistente={editingOrden}
+            />
           </div>
         </div>
 

@@ -17,7 +17,8 @@ import {
   Package,
   ServerIcon,
   UserSquare,
-  ShipIcon
+  ShipIcon,
+  ChartColumn
 } from "lucide-react"
 
 export function TallerNav() {
@@ -88,6 +89,11 @@ export function TallerNav() {
       href: "/taller/clientes",
       title: "Gestión de Clientes",
       icon: <Users className="mr-2 h-4 w-4" />,
+    },
+    {
+      href: "/taller/reportes",
+      title: "Reportes",
+      icon: <ChartColumn className="mr-2 h-4 w-4" />,
     },
     {
       href: "/taller/accesos",
