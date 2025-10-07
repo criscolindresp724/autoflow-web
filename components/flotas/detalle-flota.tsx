@@ -6,22 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Car, FileText, Calendar } from "lucide-react"
-
-interface Flota {
-  id: number
-  nombre: string
-  empresa: string
-  contacto: string
-  telefono: string
-  email: string
-  cantidadVehiculos: number
-  estado: "Activa" | "Inactiva" | "En Negociación"
-  fechaRegistro: string
-  ultimaActualizacion: string
-}
+import { FlotaType } from "@/services/FLOTAS_SERVICES.service"
 
 interface DetalleFlotaProps {
-  flota: Flota
+  flota: FlotaType
 }
 
 export function DetalleFlota({ flota }: DetalleFlotaProps) {
@@ -147,7 +135,7 @@ export function DetalleFlota({ flota }: DetalleFlotaProps) {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Persona de Contacto</p>
-              <p className="text-lg font-semibold">{flota.contacto}</p>
+              <p className="text-lg font-semibold">{flota.propietario}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Teléfono</p>
@@ -155,20 +143,20 @@ export function DetalleFlota({ flota }: DetalleFlotaProps) {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Email</p>
-              <p className="text-lg font-semibold">{flota.email}</p>
+              <p className="text-lg font-semibold">{flota.correo}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Estado</p>
-              <div className="mt-1">{getEstadoBadge(flota.estado)}</div>
+              <div className="mt-1">{getEstadoBadge(flota.estado_operativo)}</div>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Fecha de Registro</p>
-              <p className="text-lg font-semibold">{flota.fechaRegistro}</p>
+              <p className="text-lg font-semibold">{flota.created_at}</p>
             </div>
-            <div>
+            {/* <div>
               <p className="text-sm font-medium text-muted-foreground">Última Actualización</p>
               <p className="text-lg font-semibold">{flota.ultimaActualizacion}</p>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>

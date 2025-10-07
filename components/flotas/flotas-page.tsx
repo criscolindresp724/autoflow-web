@@ -20,7 +20,6 @@ import { Badge } from "@/components/ui/badge"
 import { DetalleFlota } from "./detalle-flota"
 import { ConductoresFlota } from "./conductores-flota"
 import { RendimientoFlota } from "./rendimiento-flota"
-import { useToast } from "@/hooks/use-toast"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,86 +30,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import FLOTAS_SERVICES, { FlotaType } from "@/services/FLOTAS_SERVICES.service"
+import { toast } from "sonner"
 
-interface Flota {
-  id: string
-  nombre: string
-  empresa: string
-  contacto: string
-  telefono: string
-  email: string
-  cantidadVehiculos: number
-  estado: "Activa" | "Inactiva" | "En Negociación"
-  fechaRegistro: string
-  ultimaActualizacion: string
-  descripcion?: string
-}
 
-// Datos mock iniciales
-const flotasIniciales: Flota[] = [
-  {
-    id: "1",
-    nombre: "Flota Logística Norte",
-    empresa: "Transportes Rápidos S.A.",
-    contacto: "Carlos Mendoza",
-    telefono: "9876-5432",
-    email: "carlos.mendoza@transportesrapidos.com",
-    cantidadVehiculos: 12,
-    estado: "Activa",
-    fechaRegistro: "2023-01-15",
-    ultimaActualizacion: "2023-04-10",
-    descripcion: "Flota especializada en transporte de carga pesada",
-  },
-  {
-    id: "2",
-    nombre: "Flota Distribución Central",
-    empresa: "Distribuidora Nacional",
-    contacto: "Ana Martínez",
-    telefono: "8765-4321",
-    email: "ana.martinez@distribuidoranacional.com",
-    cantidadVehiculos: 8,
-    estado: "Activa",
-    fechaRegistro: "2023-02-20",
-    ultimaActualizacion: "2023-04-05",
-    descripcion: "Distribución urbana y regional",
-  },
-  {
-    id: "3",
-    nombre: "Flota Ejecutiva Capital",
-    empresa: "Servicios Corporativos XYZ",
-    contacto: "Roberto Sánchez",
-    telefono: "7654-3210",
-    email: "roberto.sanchez@corporativosxyz.com",
-    cantidadVehiculos: 5,
-    estado: "En Negociación",
-    fechaRegistro: "2023-03-10",
-    ultimaActualizacion: "2023-03-25",
-    descripcion: "Servicios ejecutivos y corporativos",
-  },
-]
+
 
 export function FlotasPage() {
-  const [flotas, setFlotas] = useState<Flota[]>([])
+  const [flotas, setFlotas] = useState<FlotaType[]>([])
   const [open, setOpen] = useState(false)
-  const [editingFlota, setEditingFlota] = useState<Flota | null>(null)
+  const [editingFlota, setEditingFlota] = useState<FlotaType | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [flotaToDelete, setFlotaToDelete] = useState<Flota | null>(null)
-  const [flotaSeleccionada, setFlotaSeleccionada] = useState<Flota | null>(null)
+  const [flotaToDelete, setFlotaToDelete] = useState<FlotaType | null>(null)
+  const [flotaSeleccionada, setFlotaSeleccionada] = useState<FlotaType | null>(null)
   const [mostrarDetalle, setMostrarDetalle] = useState(false)
   const [mostrarConductores, setMostrarConductores] = useState(false)
   const [mostrarRendimiento, setMostrarRendimiento] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const { toast } = useToast()
 
-  // Cargar datos del localStorage al iniciar
+  const FN_GET_FLOTAS = async () => {
+    const flotas = await FLOTAS_SERVICES.GET_ALL_FLOTAS()
+    setFlotas(flotas)
+  }
+
+  const FN_DELETE_FLOTA = async () => {
+    await FLOTAS_SERVICES.DELTE_FLOTA(flotaToDelete.id)
+    await FN_GET_FLOTAS()
+    toast.success('Flota Eliminada Correctamente✅')
+  }
   useEffect(() => {
-    const savedFlotas = localStorage.getItem("flotas")
-    if (savedFlotas) {
-      setFlotas(JSON.parse(savedFlotas))
-    } else {
-      setFlotas(flotasIniciales)
-      localStorage.setItem("flotas", JSON.stringify(flotasIniciales))
-    }
+    FN_GET_FLOTAS()
   }, [])
 
   // Guardar en localStorage cuando cambie el estado
@@ -120,76 +69,29 @@ export function FlotasPage() {
     }
   }, [flotas])
 
-  const handleAddFlota = (nuevaFlota: Omit<Flota, "id" | "fechaRegistro" | "ultimaActualizacion">) => {
-    const flota: Flota = {
-      ...nuevaFlota,
-      id: Date.now().toString(),
-      fechaRegistro: new Date().toISOString().split("T")[0],
-      ultimaActualizacion: new Date().toISOString().split("T")[0],
-    }
 
-    setFlotas((prev) => [...prev, flota])
-    setOpen(false)
 
-    toast({
-      title: "Flota creada",
-      description: "La flota ha sido registrada exitosamente",
-    })
-  }
-
-  const handleEditFlota = (flotaEditada: Omit<Flota, "id" | "fechaRegistro" | "ultimaActualizacion">) => {
-    if (!editingFlota) return
-
-    const flotaActualizada: Flota = {
-      ...editingFlota,
-      ...flotaEditada,
-      ultimaActualizacion: new Date().toISOString().split("T")[0],
-    }
-
-    setFlotas((prev) => prev.map((f) => (f.id === editingFlota.id ? flotaActualizada : f)))
-    setEditingFlota(null)
-    setOpen(false)
-
-    toast({
-      title: "Flota actualizada",
-      description: "Los datos de la flota han sido actualizados exitosamente",
-    })
-  }
-
-  const handleDeleteFlota = () => {
-    if (!flotaToDelete) return
-
-    setFlotas((prev) => prev.filter((f) => f.id !== flotaToDelete.id))
-    setDeleteDialogOpen(false)
-    setFlotaToDelete(null)
-
-    toast({
-      title: "Flota eliminada",
-      description: "La flota ha sido eliminada exitosamente",
-    })
-  }
-
-  const openEditDialog = (flota: Flota) => {
+  const openEditDialog = (flota: FlotaType) => {
     setEditingFlota(flota)
     setOpen(true)
   }
 
-  const openDeleteDialog = (flota: Flota) => {
+  const openDeleteDialog = (flota: FlotaType) => {
     setFlotaToDelete(flota)
     setDeleteDialogOpen(true)
   }
 
-  const verDetalle = (flota: Flota) => {
+  const verDetalle = (flota: FlotaType) => {
     setFlotaSeleccionada(flota)
     setMostrarDetalle(true)
   }
 
-  const verConductores = (flota: Flota) => {
+  const verConductores = (flota: FlotaType) => {
     setFlotaSeleccionada(flota)
     setMostrarConductores(true)
   }
 
-  const verRendimiento = (flota: Flota) => {
+  const verRendimiento = (flota: FlotaType) => {
     setFlotaSeleccionada(flota)
     setMostrarRendimiento(true)
   }
@@ -197,13 +99,15 @@ export function FlotasPage() {
   const filteredFlotas = flotas.filter(
     (flota) =>
       flota.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      flota.empresa.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      flota.contacto.toLowerCase().includes(searchTerm.toLowerCase()),
+      flota.propietario.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      flota.telefono.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      flota.identificacion_fiscal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      flota.correo.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const getEstadoBadge = (estado: Flota["estado"]) => {
+  const getEstadoBadge = (estado: string) => {
     switch (estado) {
-      case "Activa":
+      case "Activo":
         return <Badge className="bg-green-500 hover:bg-green-600">{estado}</Badge>
       case "Inactiva":
         return <Badge className="bg-gray-500 hover:bg-gray-600">{estado}</Badge>
@@ -236,7 +140,7 @@ export function FlotasPage() {
                   </DialogDescription>
                 </DialogHeader>
                 <NuevaFlotaForm
-                  onSubmit={editingFlota ? handleEditFlota : handleAddFlota}
+                  onSuccess={() => { FN_GET_FLOTAS(), setOpen(false) }}
                   flotaExistente={editingFlota}
                 />
               </DialogContent>
@@ -269,13 +173,13 @@ export function FlotasPage() {
           <TabsList>
             <TabsTrigger value="todas">Todas ({filteredFlotas.length})</TabsTrigger>
             <TabsTrigger value="activas">
-              Activas ({filteredFlotas.filter((f) => f.estado === "Activa").length})
+              Activas ({filteredFlotas.filter((f) => f.estado_operativo === "Activa").length})
             </TabsTrigger>
             <TabsTrigger value="negociacion">
-              En Negociación ({filteredFlotas.filter((f) => f.estado === "En Negociación").length})
+              En Negociación ({filteredFlotas.filter((f) => f.estado_operativo === "En Negociación").length})
             </TabsTrigger>
             <TabsTrigger value="inactivas">
-              Inactivas ({filteredFlotas.filter((f) => f.estado === "Inactiva").length})
+              Inactivas ({filteredFlotas.filter((f) => f.estado_operativo === "Inactiva").length})
             </TabsTrigger>
           </TabsList>
 
@@ -291,10 +195,12 @@ export function FlotasPage() {
                     <TableRow>
                       <TableHead>Nombre</TableHead>
                       <TableHead>Empresa</TableHead>
-                      <TableHead>Contacto</TableHead>
+                      <TableHead>Banco</TableHead>
+                      <TableHead>Propetario</TableHead>
+                      <TableHead>Identificacion Fiscal</TableHead>
                       <TableHead>Vehículos</TableHead>
                       <TableHead>Estado</TableHead>
-                      <TableHead>Última Actualización</TableHead>
+                      <TableHead>Fecha Creacion</TableHead>
                       <TableHead>Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -303,10 +209,12 @@ export function FlotasPage() {
                       <TableRow key={flota.id}>
                         <TableCell className="font-medium">{flota.nombre}</TableCell>
                         <TableCell>{flota.empresa}</TableCell>
-                        <TableCell>{flota.contacto}</TableCell>
-                        <TableCell>{flota.cantidadVehiculos}</TableCell>
-                        <TableCell>{getEstadoBadge(flota.estado)}</TableCell>
-                        <TableCell>{flota.ultimaActualizacion}</TableCell>
+                        <TableCell>{flota.nombre_banco}</TableCell>
+                        <TableCell>{flota.propietario}</TableCell>
+                        <TableCell>{flota.identificacion_fiscal}</TableCell>
+                        <TableCell>{flota.cantidad_vehiculos}</TableCell>
+                        <TableCell>{getEstadoBadge(flota.estado_operativo)}</TableCell>
+                        <TableCell>{flota.created_at}</TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
                             <Button variant="ghost" size="icon" onClick={() => verDetalle(flota)} title="Ver detalles">
@@ -361,8 +269,8 @@ export function FlotasPage() {
               negociacion: "En Negociación",
               inactivas: "Inactiva",
             }
-            const estado = estadoMap[tab as keyof typeof estadoMap] as Flota["estado"]
-            const flotasFiltradas = filteredFlotas.filter((f) => f.estado === estado)
+            const estado = estadoMap[tab as keyof typeof estadoMap] as string
+            const flotasFiltradas = filteredFlotas.filter((f) => f.estado_operativo === estado)
 
             return (
               <TabsContent key={tab} value={tab}>
@@ -379,9 +287,13 @@ export function FlotasPage() {
                         <TableRow>
                           <TableHead>Nombre</TableHead>
                           <TableHead>Empresa</TableHead>
+                          <TableHead>Banco</TableHead>
+                          <TableHead>Propietario</TableHead>
                           <TableHead>Contacto</TableHead>
+                          <TableHead>Correo</TableHead>
+                          <TableHead>Identificacion Fiscal</TableHead>
                           <TableHead>Vehículos</TableHead>
-                          <TableHead>Última Actualización</TableHead>
+                          <TableHead>Fecha Creacion</TableHead>
                           <TableHead>Acciones</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -390,9 +302,13 @@ export function FlotasPage() {
                           <TableRow key={flota.id}>
                             <TableCell className="font-medium">{flota.nombre}</TableCell>
                             <TableCell>{flota.empresa}</TableCell>
-                            <TableCell>{flota.contacto}</TableCell>
-                            <TableCell>{flota.cantidadVehiculos}</TableCell>
-                            <TableCell>{flota.ultimaActualizacion}</TableCell>
+                            <TableCell>{flota.nombre_banco}</TableCell>
+                            <TableCell>{flota.propietario}</TableCell>
+                            <TableCell>{flota.telefono}</TableCell>
+                            <TableCell>{flota.correo}</TableCell>
+                            <TableCell>{flota.identificacion_fiscal}</TableCell>
+                            <TableCell>{flota.cantidad_vehiculos}</TableCell>
+                            <TableCell>{flota.created_at}</TableCell>
                             <TableCell>
                               <div className="flex space-x-2">
                                 <Button
@@ -494,7 +410,7 @@ export function FlotasPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteFlota}>Eliminar</AlertDialogAction>
+            <AlertDialogAction onClick={FN_DELETE_FLOTA}>Eliminar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

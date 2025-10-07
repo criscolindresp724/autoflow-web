@@ -8,49 +8,109 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { useState, useEffect } from "react"
+import FLOTAS_SERVICES, { FlotaType } from "@/services/FLOTAS_SERVICES.service"
+import { toast } from "sonner"
 
-interface FlotaForm {
-  nombre: string
-  empresa: string
-  contacto: string
-  telefono: string
-  email: string
-  cantidadVehiculos: number
-  estado: "Activa" | "Inactiva" | "En Negociación"
-  descripcion?: string
-}
 
 interface NuevaFlotaFormProps {
-  onSubmit: (flota: FlotaForm) => void
-  flotaExistente?: any
+  onSuccess?: () => void;
+  flotaExistente?: FlotaType
 }
 
-export function NuevaFlotaForm({ onSubmit, flotaExistente }: NuevaFlotaFormProps) {
-  const [formData, setFormData] = useState<FlotaForm>({
-    nombre: "",
-    empresa: "",
-    contacto: "",
-    telefono: "",
-    email: "",
-    cantidadVehiculos: 0,
-    estado: "Activa",
-    descripcion: "",
+export function NuevaFlotaForm({ onSuccess, flotaExistente }: NuevaFlotaFormProps) {
+  const [formData, setFormData] = useState<Omit<FlotaType, 'id' | 'created_at' | 'contacto_departamento_id'>>({
+    nombre: null,
+    empresa: null,
+    propietario: null,
+    telefono: null,
+    correo: null,
+    cantidad_vehiculos: 1,
+    estado_operativo: "Activa",
+    descripcion: null,
+    identificacion_fiscal: null,
+    info_banco_id: 0,
+    metodo_pago_id: 1,
+    nombre_banco: ""
   })
+  const isFormValid = () => {
+    const {
+      nombre,
+      empresa,
+      propietario,
+      telefono,
+      correo,
+      cantidad_vehiculos,
+      descripcion,
+      identificacion_fiscal,
+      info_banco_id,
+      metodo_pago_id,
+      nombre_banco,
+    } = formData;
 
+    // Validar que todos los campos tengan valores válidos
+    return (
+      nombre &&
+      empresa &&
+      propietario &&
+      telefono &&
+      correo &&
+      descripcion &&
+      identificacion_fiscal &&
+      nombre_banco &&
+      cantidad_vehiculos > 0 &&
+      metodo_pago_id > 0
+    );
+  };
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+
+  const FN_INSERT_FLOTA = async () => {
+    setIsSubmitting(true)
+    console.log(formData)
+    console.log('entra insert')
+    if (!isFormValid()) {
+      toast.warning('Por favor completa todos los campos del formulario.')
+      setIsSubmitting(false)
+      return;
+    }
+    await FLOTAS_SERVICES.INSERT_FLOTA(formData)
+    onSuccess && onSuccess()
+    setIsSubmitting(false)
+    toast.success('Nueva Flota Registrada Correctamente✅')
+  }
+
+  const FN_UPDATE_FLOTA = async () => {
+    setIsSubmitting(true)
+    console.log(formData)
+    console.log('entra')
+    if (!isFormValid()) {
+      toast.warning('Por favor completa todos los campos del formulario.')
+      setIsSubmitting(false)
+      return;
+    }
+    await FLOTAS_SERVICES.UPDATE_FLOTA({ ...formData, id: flotaExistente.id, estado_operativo:formData.estado_operativo || flotaExistente.estado_operativo })
+    onSuccess && onSuccess()
+    setIsSubmitting(false)
+    toast.success('Flota Actualizada Correctamente✅')
+  }
+
+
 
   // Cargar datos de la flota existente si se está editando
   useEffect(() => {
     if (flotaExistente) {
+    console.log(flotaExistente)
       setFormData({
         nombre: flotaExistente.nombre || "",
         empresa: flotaExistente.empresa || "",
-        contacto: flotaExistente.contacto || "",
+        propietario: flotaExistente.propietario || "",
         telefono: flotaExistente.telefono || "",
-        email: flotaExistente.email || "",
-        cantidadVehiculos: flotaExistente.cantidadVehiculos || 0,
-        estado: flotaExistente.estado || "Activa",
+        correo: flotaExistente.correo || "",
+        cantidad_vehiculos: flotaExistente.cantidad_vehiculos || 0,
         descripcion: flotaExistente.descripcion || "",
+        identificacion_fiscal: flotaExistente.identificacion_fiscal,
+        nombre_banco: flotaExistente.nombre_banco,
+        metodo_pago_id: flotaExistente.metodo_pago_id
       })
     }
   }, [flotaExistente])
@@ -59,38 +119,39 @@ export function NuevaFlotaForm({ onSubmit, flotaExistente }: NuevaFlotaFormProps
     const { name, value } = e.target
     setFormData({
       ...formData,
-      [name]: name === "cantidadVehiculos" ? Number.parseInt(value) || 0 : value,
+      [name]: value,
     })
   }
 
   const handleSelectChange = (value: string) => {
-    setFormData({ ...formData, estado: value as FlotaForm["estado"] })
+    setFormData({ ...formData, estado_operativo: value })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
 
     // Simular delay de procesamiento
     await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    onSubmit(formData)
-
-    // Limpiar formulario si no es edición
     if (!flotaExistente) {
-      setFormData({
-        nombre: "",
-        empresa: "",
-        contacto: "",
-        telefono: "",
-        email: "",
-        cantidadVehiculos: 0,
-        estado: "Activa",
-        descripcion: "",
-      })
+      FN_INSERT_FLOTA()
+
+    } else {
+      FN_UPDATE_FLOTA()
     }
 
-    setIsSubmitting(false)
+    // // Limpiar formulario si no es edición
+    // if (!flotaExistente) {
+    //   setFormData({
+    //     nombre: "",
+    //     empresa: "",
+    //     propietario: "",
+    //     telefono: "",
+    //     correo: "",
+    //     cantidad_vehiculos: 0,
+    //     estado_operativo: "Activa",
+    //     descripcion: "",
+    //   })
+    // }
   }
 
   return (
@@ -108,7 +169,7 @@ export function NuevaFlotaForm({ onSubmit, flotaExistente }: NuevaFlotaFormProps
       <div className="grid grid-cols-2 gap-4">
         <div className="grid gap-2">
           <Label htmlFor="contacto">Persona de Contacto *</Label>
-          <Input id="contacto" name="contacto" value={formData.contacto} onChange={handleInputChange} required />
+          <Input id="contacto" name="propietario" value={formData.propietario} onChange={handleInputChange} required />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="telefono">Teléfono *</Label>
@@ -118,30 +179,54 @@ export function NuevaFlotaForm({ onSubmit, flotaExistente }: NuevaFlotaFormProps
 
       <div className="grid gap-2">
         <Label htmlFor="email">Email *</Label>
-        <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
+        <Input id="email" name="correo" type="email" value={formData.correo} onChange={handleInputChange} required />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="cantidadVehiculos">Cantidad de Vehículos *</Label>
+          <Label htmlFor="cantidad_vehiculos">Cantidad de Vehículos *</Label>
           <Input
-            id="cantidadVehiculos"
-            name="cantidadVehiculos"
+            id="cantidad_vehiculos"
+            name="cantidad_vehiculos"
             type="number"
             min="0"
-            value={formData.cantidadVehiculos}
+            value={formData.cantidad_vehiculos}
             onChange={handleInputChange}
             required
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="estado">Estado *</Label>
-          <Select onValueChange={handleSelectChange} value={formData.estado}>
-            <SelectTrigger id="estado">
-              <SelectValue placeholder="Seleccionar estado" />
+          <Label htmlFor="identificacion_fiscal">Identificacion Fiscal</Label>
+          <Input
+            id="identificacion_fiscal"
+            name="identificacion_fiscal"
+            type="text"
+            value={formData.identificacion_fiscal}
+            onChange={handleInputChange}
+            maxLength={80}
+            required
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="nombre_banco">Nombre Banco</Label>
+          <Input
+            id="nombre_banco"
+            name="nombre_banco"
+            type="text"
+            value={formData.nombre_banco}
+            onChange={handleInputChange}
+            maxLength={80}
+            required
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="estado_operativo">Estado *</Label>
+          <Select onValueChange={handleSelectChange} value={formData.estado_operativo || flotaExistente.estado_operativo} defaultValue={formData.estado_operativo}>
+            <SelectTrigger id="estado_operativo">
+              <SelectValue placeholder="Seleccionar estado" defaultValue={formData.estado_operativo}/>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Activa">Activa</SelectItem>
+              <SelectItem value="Activo">Activo</SelectItem>
               <SelectItem value="En Negociación">En Negociación</SelectItem>
               <SelectItem value="Inactiva">Inactiva</SelectItem>
             </SelectContent>

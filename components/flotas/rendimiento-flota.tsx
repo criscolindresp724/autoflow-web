@@ -19,22 +19,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
-
-interface Flota {
-  id: number
-  nombre: string
-  empresa: string
-  contacto: string
-  telefono: string
-  email: string
-  cantidadVehiculos: number
-  estado: "Activa" | "Inactiva" | "En Negociación"
-  fechaRegistro: string
-  ultimaActualizacion: string
-}
+import { FlotaType } from "@/services/FLOTAS_SERVICES.service"
 
 interface RendimientoFlotaProps {
-  flota: Flota
+  flota: FlotaType
 }
 
 export function RendimientoFlota({ flota }: RendimientoFlotaProps) {

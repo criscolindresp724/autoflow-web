@@ -5,22 +5,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { UserPlus, FileText, Phone } from "lucide-react"
-
-interface Flota {
-  id: number
-  nombre: string
-  empresa: string
-  contacto: string
-  telefono: string
-  email: string
-  cantidadVehiculos: number
-  estado: "Activa" | "Inactiva" | "En Negociación"
-  fechaRegistro: string
-  ultimaActualizacion: string
-}
-
+import { FlotaType } from "@/services/FLOTAS_SERVICES.service"
 interface ConductoresFlotaProps {
-  flota: Flota
+  flota: FlotaType
 }
 
 export function ConductoresFlota({ flota }: ConductoresFlotaProps) {
