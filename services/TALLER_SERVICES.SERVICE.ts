@@ -47,6 +47,19 @@ export type TallerType = {
     hora_cierre?: string;
 }
 
+export type EspecialidadType = {
+    id: number;
+    nombre: string;
+}
+export type CargoTallerType = {
+    id: number;
+    nombre: string;
+}
+export type EstadoPersonalType = {
+    id: number;
+    nombre: string;
+}
+
 const TALLER_SERVICES = {
     async GET_ALL_SOLICITUDES_TALLERES(): Promise<TallerSolicitudType[]> {
         const TalleresData: TallerSolicitudType[] = await AxiosGet({ path: '/solicitudes_talleres' })
@@ -83,6 +96,18 @@ const TALLER_SERVICES = {
             path: `/solicitudes_talleres?id=eq.${Id}`,
             payload: { estado: "rechazada" }
         })
+        return TalleresData;
+    },
+    async GET_ESPECIALIDADES(): Promise<EspecialidadType[]> {
+        const TalleresData: EspecialidadType[] = await AxiosGet({ path: `/especialidades_taller` })
+        return TalleresData;
+    },
+    async GET_CARGO_MIEMBRO_EQUIPO(): Promise<CargoTallerType[]> {
+        const TalleresData: CargoTallerType[] = await AxiosGet({ path: `/cargos_taller` })
+        return TalleresData;
+    },
+    async GET_ESTADO_PERSONAL(): Promise<EstadoPersonalType[]> {
+        const TalleresData: EstadoPersonalType[] = await AxiosGet({ path: `/estado_personal` })
         return TalleresData;
     },
 };

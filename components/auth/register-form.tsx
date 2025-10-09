@@ -13,8 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useAuth } from "@/lib/supabase/auth"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import TALLERES_SERVICES from "@/services/TALLERES_SERVICES.service"
-import { TallerType } from "@/services/TALLER_SERVICES.SERVICE"
+import TALLER_SERVICES, { TallerType } from "@/services/TALLER_SERVICES.SERVICE"
 
 const formSchema = z
   .object({
@@ -68,7 +67,7 @@ export function RegisterForm({ onSuccess, registerUserTaller }: { onSuccess?: ()
   })
 
   const FN_GET_TALLERES = async () => {
-    const res = await TALLERES_SERVICES.GET_ALL_TALLERES();
+    const res = await TALLER_SERVICES.GET_ALL_TALLERES();
     SetState_talleres(res)
     console.log(res)
   }

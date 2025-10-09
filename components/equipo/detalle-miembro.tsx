@@ -7,22 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { FileText, Award, PenToolIcon as Tool } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
-
-interface MiembroEquipo {
-  id: number
-  nombre: string
-  cargo: string
-  especialidad: string
-  telefono: string
-  email: string
-  fechaContratacion: string
-  estado: "Activo" | "Inactivo" | "De Vacaciones" | "Permiso"
-  horasTrabajadas: number
-  ordenesCompletadas: number
-}
+import { MiembroEquipoTrabajoType } from "@/services/EQUIPO_TRABAJO_SERVICES.service"
 
 interface DetalleMiembroProps {
-  miembro: MiembroEquipo
+  miembro: MiembroEquipoTrabajoType
 }
 
 export function DetalleMiembro({ miembro }: DetalleMiembroProps) {
@@ -114,11 +102,11 @@ export function DetalleMiembro({ miembro }: DetalleMiembroProps) {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Cargo</p>
-              <p className="text-lg font-semibold">{miembro.cargo}</p>
+              <p className="text-lg font-semibold">{miembro.cargos_taller.nombre}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Especialidad</p>
-              <p className="text-lg font-semibold">{miembro.especialidad}</p>
+              <p className="text-lg font-semibold">{miembro.especialidades_taller.nombre}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Teléfono</p>
@@ -130,15 +118,15 @@ export function DetalleMiembro({ miembro }: DetalleMiembroProps) {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Estado</p>
-              <div className="mt-1">{getEstadoBadge(miembro.estado)}</div>
+              <div className="mt-1">{getEstadoBadge(miembro.especialidades_taller.nombre)}</div>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Fecha de Contratación</p>
-              <p className="text-lg font-semibold">{miembro.fechaContratacion}</p>
+              <p className="text-lg font-semibold">{miembro.created_at}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Órdenes Completadas</p>
-              <p className="text-lg font-semibold">{miembro.ordenesCompletadas}</p>
+              <p className="text-lg font-semibold">{miembro.ordenes_completadas}</p>
             </div>
           </div>
         </CardContent>

@@ -7,22 +7,9 @@ import { Calendar, Save } from "lucide-react"
 import { useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-
-interface MiembroEquipo {
-  id: number
-  nombre: string
-  cargo: string
-  especialidad: string
-  telefono: string
-  email: string
-  fechaContratacion: string
-  estado: "Activo" | "Inactivo" | "De Vacaciones" | "Permiso"
-  horasTrabajadas: number
-  ordenesCompletadas: number
-}
-
+import { MiembroEquipoTrabajoType } from "@/services/EQUIPO_TRABAJO_SERVICES.service"
 interface HorariosMiembroProps {
-  miembro: MiembroEquipo
+  miembro: MiembroEquipoTrabajoType
 }
 
 export function HorariosMiembro({ miembro }: HorariosMiembroProps) {
@@ -152,7 +139,7 @@ export function HorariosMiembro({ miembro }: HorariosMiembroProps) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-sm font-medium text-muted-foreground">Horas Trabajadas (Mes Actual)</div>
-                <div className="text-2xl font-bold">{miembro.horasTrabajadas} horas</div>
+                <div className="text-2xl font-bold">{miembro.horas_trabajadas} horas</div>
               </div>
               <div>
                 <div className="text-sm font-medium text-muted-foreground">Horas Extra</div>

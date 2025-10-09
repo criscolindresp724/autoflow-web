@@ -19,7 +19,6 @@ import { NuevoMiembroForm } from "./nuevo-miembro-form"
 import { Badge } from "@/components/ui/badge"
 import { DetalleMiembro } from "./detalle-miembro"
 import { HorariosMiembro } from "./horarios-miembro"
-import { useToast } from "@/hooks/use-toast"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,103 +29,39 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import EQUIPO_TRABAJO_SERVICES, { MiembroEquipoTrabajoType } from "@/services/EQUIPO_TRABAJO_SERVICES.service"
+import { FormatDateFullSpanish, FormatToUSD } from "@/helpers/HelpersFunctions"
+import { toast } from "sonner"
 
-interface MiembroEquipo {
-  id?: string
-  nombre?: string
-  apellido?: string
-  cargo?: string
-  especialidad?: string
-  telefono?: string
-  email?: string
-  fechaContratacion?: string
-  estado?: "Activo" | "Inactivo" | "De Vacaciones" | "Permiso"
-  horasTrabajadas?: number
-  ordenesCompletadas?: number
-  salario?: number
-}
 
-// Datos mock iniciales
-const miembrosIniciales: MiembroEquipo[] = [
-  {
-    id: "1",
-    nombre: "Juan",
-    apellido: "Martínez",
-    cargo: "Técnico Senior",
-    especialidad: "Mecánica General",
-    telefono: "9876-5432",
-    email: "juan.martinez@taller.com",
-    fechaContratacion: "2020-03-15",
-    estado: "Activo",
-    horasTrabajadas: 160,
-    ordenesCompletadas: 45,
-    salario: 25000,
-  },
-  {
-    id: "2",
-    nombre: "María",
-    apellido: "López",
-    cargo: "Técnico",
-    especialidad: "Pintura",
-    telefono: "8765-4321",
-    email: "maria.lopez@taller.com",
-    fechaContratacion: "2021-05-10",
-    estado: "Activo",
-    horasTrabajadas: 152,
-    ordenesCompletadas: 38,
-    salario: 20000,
-  },
-  {
-    id: "3",
-    nombre: "Carlos",
-    apellido: "Rodríguez",
-    cargo: "Técnico Senior",
-    especialidad: "Carrocería",
-    telefono: "7654-3210",
-    email: "carlos.rodriguez@taller.com",
-    fechaContratacion: "2019-11-20",
-    estado: "De Vacaciones",
-    horasTrabajadas: 120,
-    ordenesCompletadas: 32,
-    salario: 24000,
-  },
-  {
-    id: "4",
-    nombre: "Ana",
-    apellido: "Sánchez",
-    cargo: "Administrativo",
-    especialidad: "Atención al Cliente",
-    telefono: "6543-2109",
-    email: "ana.sanchez@taller.com",
-    fechaContratacion: "2022-01-15",
-    estado: "Activo",
-    horasTrabajadas: 168,
-    ordenesCompletadas: 0,
-    salario: 18000,
-  },
-]
+
 
 export function EquipoPage() {
-  const [miembros, setMiembros] = useState<MiembroEquipo[]>([])
+  const [miembros, setMiembros] = useState<MiembroEquipoTrabajoType[]>([])
   const [open, setOpen] = useState(false)
-  const [editingMiembro, setEditingMiembro] = useState<MiembroEquipo | null>(null)
+  const [editingMiembro, setEditingMiembro] = useState<MiembroEquipoTrabajoType | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [miembroToDelete, setMiembroToDelete] = useState<MiembroEquipo | null>(null)
-  const [miembroSeleccionado, setMiembroSeleccionado] = useState<MiembroEquipo | null>(null)
+  const [miembroToDelete, setMiembroToDelete] = useState<MiembroEquipoTrabajoType | null>(null)
+  const [miembroSeleccionado, setMiembroSeleccionado] = useState<MiembroEquipoTrabajoType | null>(null)
   const [mostrarDetalle, setMostrarDetalle] = useState(false)
   const [mostrarHorarios, setMostrarHorarios] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const { toast } = useToast()
+
+  const FN_GET_EQUIPO_TRABAJO = async () => {
+    const EquipoTrabajo = await EQUIPO_TRABAJO_SERVICES.GET_ALL_EQUIPO()
+    setMiembros(EquipoTrabajo)
+  }
+  const FN_DELETE_MIEMBRO = async () => {
+    await EQUIPO_TRABAJO_SERVICES.DELETE_MIEMBRO(miembroToDelete.id)
+    setMiembros((prev) => prev.filter((m) => m.id !== miembroToDelete.id))
+    setDeleteDialogOpen(false)
+    setMiembroToDelete(null)
+    toast.success('Miembro equipo eliminado correctamente✅')
+  }
 
   // Cargar datos del localStorage al iniciar
   useEffect(() => {
-    const savedMiembros = localStorage.getItem("miembros")
-    if (savedMiembros) {
-      setMiembros(JSON.parse(savedMiembros))
-    } else {
-      setMiembros(miembrosIniciales)
-      localStorage.setItem("miembros", JSON.stringify(miembrosIniciales))
-    }
+    FN_GET_EQUIPO_TRABAJO()
   }, [])
 
   // Guardar en localStorage cuando cambie el estado
@@ -136,75 +71,22 @@ export function EquipoPage() {
     }
   }, [miembros])
 
-  const handleAddMiembro = (
-    nuevoMiembro: Omit<MiembroEquipo, "id" | "fechaContratacion" | "horasTrabajadas" | "ordenesCompletadas">,
-  ) => {
-    const miembro: MiembroEquipo = {
-      ...nuevoMiembro,
-      id: Date.now().toString(),
-      fechaContratacion: new Date().toISOString().split("T")[0],
-      horasTrabajadas: 0,
-      ordenesCompletadas: 0,
-    }
-
-    setMiembros((prev) => [...prev, miembro])
-    setOpen(false)
-
-    toast({
-      title: "Miembro agregado",
-      description: "El miembro del equipo ha sido registrado exitosamente",
-    })
-  }
-
-  const handleEditMiembro = (
-    miembroEditado: Omit<MiembroEquipo, "id" | "fechaContratacion" | "horasTrabajadas" | "ordenesCompletadas">,
-  ) => {
-    if (!editingMiembro) return
-
-    const miembroActualizado: MiembroEquipo = {
-      ...editingMiembro,
-      ...miembroEditado,
-    }
-
-    setMiembros((prev) => prev.map((m) => (m.id === editingMiembro.id ? miembroActualizado : m)))
-    setEditingMiembro(null)
-    setOpen(false)
-
-    toast({
-      title: "Miembro actualizado",
-      description: "Los datos del miembro han sido actualizados exitosamente",
-    })
-  }
-
-  const handleDeleteMiembro = () => {
-    if (!miembroToDelete) return
-
-    setMiembros((prev) => prev.filter((m) => m.id !== miembroToDelete.id))
-    setDeleteDialogOpen(false)
-    setMiembroToDelete(null)
-
-    toast({
-      title: "Miembro eliminado",
-      description: "El miembro ha sido eliminado exitosamente",
-    })
-  }
-
-  const openEditDialog = (miembro: MiembroEquipo) => {
+  const openEditDialog = (miembro: MiembroEquipoTrabajoType) => {
     setEditingMiembro(miembro)
     setOpen(true)
   }
 
-  const openDeleteDialog = (miembro: MiembroEquipo) => {
+  const openDeleteDialog = (miembro: MiembroEquipoTrabajoType) => {
     setMiembroToDelete(miembro)
     setDeleteDialogOpen(true)
   }
 
-  const verDetalle = (miembro: MiembroEquipo) => {
+  const verDetalle = (miembro: MiembroEquipoTrabajoType) => {
     setMiembroSeleccionado(miembro)
     setMostrarDetalle(true)
   }
 
-  const verHorarios = (miembro: MiembroEquipo) => {
+  const verHorarios = (miembro: MiembroEquipoTrabajoType) => {
     setMiembroSeleccionado(miembro)
     setMostrarHorarios(true)
   }
@@ -213,11 +95,11 @@ export function EquipoPage() {
     (miembro) =>
       miembro.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       miembro.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      miembro.cargo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      miembro.especialidad.toLowerCase().includes(searchTerm.toLowerCase()),
+      miembro.cargos_taller.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      miembro.especialidades_taller.nombre.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const getEstadoBadge = (estado: MiembroEquipo["estado"]) => {
+  const getEstadoBadge = (estado: string) => {
     switch (estado) {
       case "Activo":
         return <Badge className="bg-green-500 hover:bg-green-600">{estado}</Badge>
@@ -254,7 +136,8 @@ export function EquipoPage() {
                   </DialogDescription>
                 </DialogHeader>
                 <NuevoMiembroForm
-                  onSubmit={editingMiembro ? handleEditMiembro : handleAddMiembro}
+                  // onSubmit={editingMiembro ? handleEditMiembro : handleAddMiembro}
+                  onSuccess={() => { FN_GET_EQUIPO_TRABAJO(), setOpen(false) }}
                   miembroExistente={editingMiembro}
                 />
               </DialogContent>
@@ -287,13 +170,13 @@ export function EquipoPage() {
           <TabsList>
             <TabsTrigger value="todos">Todos ({filteredMiembros.length})</TabsTrigger>
             <TabsTrigger value="tecnicos">
-              Técnicos ({filteredMiembros.filter((m) => m.cargo.includes("Técnico")).length})
+              Técnicos ({filteredMiembros.filter((m) => m.cargos_taller.nombre.includes("Tecnico")).length})
             </TabsTrigger>
             <TabsTrigger value="administrativos">
-              Administrativos ({filteredMiembros.filter((m) => m.cargo.includes("Administrativo")).length})
+              Administrativos ({filteredMiembros.filter((m) => m.cargos_taller.nombre.includes("Administrador")).length})
             </TabsTrigger>
             <TabsTrigger value="ausentes">
-              Ausentes ({filteredMiembros.filter((m) => m.estado === "De Vacaciones" || m.estado === "Permiso").length})
+              Ausentes ({filteredMiembros.filter((m) => m.estado_personal.nombre === "De Vacaciones" || m.estado_personal.nombre === "Permiso").length})
             </TabsTrigger>
           </TabsList>
 
@@ -315,6 +198,8 @@ export function EquipoPage() {
                       <TableHead>Teléfono</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Órdenes Completadas</TableHead>
+                      <TableHead>Salario</TableHead>
+                      <TableHead>Fecha Ingreso</TableHead>
                       <TableHead>Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -324,11 +209,13 @@ export function EquipoPage() {
                         <TableCell className="font-medium">
                           {miembro.nombre} {miembro.apellido}
                         </TableCell>
-                        <TableCell>{miembro.cargo}</TableCell>
-                        <TableCell>{miembro.especialidad}</TableCell>
+                        <TableCell>{miembro.cargos_taller.nombre}</TableCell>
+                        <TableCell>{miembro.especialidades_taller.nombre}</TableCell>
                         <TableCell>{miembro.telefono}</TableCell>
-                        <TableCell>{getEstadoBadge(miembro.estado)}</TableCell>
-                        <TableCell>{miembro.ordenesCompletadas}</TableCell>
+                        <TableCell>{getEstadoBadge(miembro.estado_personal.nombre)}</TableCell>
+                        <TableCell>{miembro.ordenes_completadas}</TableCell>
+                        <TableCell>{FormatToUSD(miembro.salario)}</TableCell>
+                        <TableCell>{FormatDateFullSpanish(miembro.created_at)}</TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
                             <Button
@@ -375,14 +262,14 @@ export function EquipoPage() {
 
           {/* Tabs filtradas por tipo */}
           {["tecnicos", "administrativos", "ausentes"].map((tab) => {
-            let miembrosFiltrados: MiembroEquipo[] = []
+            let miembrosFiltrados: MiembroEquipoTrabajoType[] = []
 
             if (tab === "tecnicos") {
-              miembrosFiltrados = filteredMiembros.filter((m) => m.cargo.includes("Técnico"))
+              miembrosFiltrados = filteredMiembros.filter((m) => m.cargos_taller.nombre.includes("Tecnico"))
             } else if (tab === "administrativos") {
-              miembrosFiltrados = filteredMiembros.filter((m) => m.cargo.includes("Administrativo"))
+              miembrosFiltrados = filteredMiembros.filter((m) => m.cargos_taller.nombre.includes("Administrador"))
             } else if (tab === "ausentes") {
-              miembrosFiltrados = filteredMiembros.filter((m) => m.estado === "De Vacaciones" || m.estado === "Permiso")
+              miembrosFiltrados = filteredMiembros.filter((m) => m.estado_personal.nombre === "De Vacaciones" || m.estado_personal.nombre === "Permiso")
             }
 
             return (
@@ -405,7 +292,9 @@ export function EquipoPage() {
                           <TableHead>Especialidad</TableHead>
                           <TableHead>Teléfono</TableHead>
                           <TableHead>Estado</TableHead>
-                          <TableHead>{tab === "ausentes" ? "Fecha de Regreso" : "Órdenes Completadas"}</TableHead>
+                          <TableHead>Ordenes Completadas</TableHead>
+                          <TableHead>Salario</TableHead>
+                          <TableHead>Fecha Ingreso</TableHead>
                           <TableHead>Acciones</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -415,17 +304,14 @@ export function EquipoPage() {
                             <TableCell className="font-medium">
                               {miembro.nombre} {miembro.apellido}
                             </TableCell>
-                            <TableCell>{miembro.cargo}</TableCell>
-                            <TableCell>{miembro.especialidad}</TableCell>
+                            <TableCell>{miembro.cargos_taller.nombre}</TableCell>
+                            <TableCell>{miembro.especialidades_taller.nombre}</TableCell>
                             <TableCell>{miembro.telefono}</TableCell>
-                            <TableCell>{getEstadoBadge(miembro.estado)}</TableCell>
-                            <TableCell>
-                              {tab === "ausentes"
-                                ? miembro.estado === "De Vacaciones"
-                                  ? "2023-05-15"
-                                  : "2023-04-25"
-                                : miembro.ordenesCompletadas}
-                            </TableCell>
+                            <TableCell>{getEstadoBadge(miembro.estado_personal.nombre)}</TableCell>
+                            <TableCell>{miembro.ordenes_completadas}</TableCell>
+                            <TableCell>{FormatToUSD(miembro.salario)}</TableCell>
+                            <TableCell>{FormatDateFullSpanish(miembro.created_at)}</TableCell>
+
                             <TableCell>
                               <div className="flex space-x-2">
                                 <Button
@@ -511,7 +397,7 @@ export function EquipoPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteMiembro}>Eliminar</AlertDialogAction>
+            <AlertDialogAction onClick={FN_DELETE_MIEMBRO}>Eliminar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
