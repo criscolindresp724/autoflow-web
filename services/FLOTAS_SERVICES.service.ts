@@ -16,6 +16,7 @@ export type FlotaType = {
     empresa?: string;
     cantidad_vehiculos?: number;
     descripcion?: string;
+    numero_rtn?: string;
 };
 
 

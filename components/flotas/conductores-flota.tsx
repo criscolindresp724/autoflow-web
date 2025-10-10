@@ -72,7 +72,7 @@ export function ConductoresFlota({ flota }: ConductoresFlotaProps) {
     <div className="space-y-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Conductores de {flota.nombre}</CardTitle>
+          <CardTitle>Conductores de {flota?.nombre}</CardTitle>
           <div className="flex space-x-2">
             <Button size="sm">
               <UserPlus className="mr-2 h-4 w-4" /> Agregar Conductor

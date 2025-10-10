@@ -1,4 +1,4 @@
-import { FlotasPage } from "@/components/flotas/flotas-page"
+import FlotasPage from "@/components/flotas/flotas-page"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {

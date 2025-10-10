@@ -59,6 +59,14 @@ export type EstadoPersonalType = {
     id: number;
     nombre: string;
 }
+export type TipoCuentaBancariaType = {
+    id: number;
+    nombre: string;
+}
+export type PoliticasMantenimientoType = {
+    id: number;
+    nombre: string;
+}
 
 const TALLER_SERVICES = {
     async GET_ALL_SOLICITUDES_TALLERES(): Promise<TallerSolicitudType[]> {
@@ -108,6 +116,14 @@ const TALLER_SERVICES = {
     },
     async GET_ESTADO_PERSONAL(): Promise<EstadoPersonalType[]> {
         const TalleresData: EstadoPersonalType[] = await AxiosGet({ path: `/estado_personal` })
+        return TalleresData;
+    },
+    async GET_TIPO_CUENTA_BANCARIA(): Promise<TipoCuentaBancariaType[]> {
+        const TalleresData: TipoCuentaBancariaType[] = await AxiosGet({ path: `/tipo_cuenta_bancaria` })
+        return TalleresData;
+    },
+    async GET_POLITICAS_MANTENIMIENTO(): Promise<PoliticasMantenimientoType[]> {
+        const TalleresData: PoliticasMantenimientoType[] = await AxiosGet({ path: `/politicas_mantenimiento` })
         return TalleresData;
     },
 };

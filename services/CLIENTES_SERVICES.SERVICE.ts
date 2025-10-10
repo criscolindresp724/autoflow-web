@@ -28,7 +28,12 @@ const CLIENTS_SERVICES = {
         const UsuariosData: ClienteType[] = await AxiosGet({ path: `/view_clients?id=eq.${Id}` })
         return UsuariosData[0];
     },
-    async ADD_NEW_CLIENTE(cliente: ClienteType): Promise<{ success: boolean; data: ClienteType[]; error?: string | null }> {
+    async ADD_NEW_CLIENTE(cliente: Omit<ClienteType, 'password'>): Promise<{ success: boolean; data: ClienteType[]; error?: string | null }> {
+        const res: ClienteType[] = await AxiosPost({ path: '/clients', payload: { ...cliente, taller_id: localStorage.getItem('taller_id') } });
+        return { success: true, data: res, error: null };
+    },
+    async ADD_NEW_CLIENTE_CON_REGISTRO(cliente: ClienteType): Promise<{ success: boolean; data: ClienteType[]; error?: string | null }> {
+
         const user = await SIGNUP_SERVICES.SignUp({
             correo: cliente.email || '',
             password: cliente.password, // Default password, should be changed later

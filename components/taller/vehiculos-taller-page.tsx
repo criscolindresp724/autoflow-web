@@ -161,7 +161,7 @@ export function VehiculosTallerPage({ onOpenHojaIngreso }: VehiculosTallerPagePr
                 email: row.Email || `${row.Cliente.toLowerCase().replace(/\s+/g, '')}@auto-generado.com`,
                 client_type: "Individual",
                 created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
               }
 
               // Crear cliente en la base de datos

@@ -33,9 +33,6 @@ import EQUIPO_TRABAJO_SERVICES, { MiembroEquipoTrabajoType } from "@/services/EQ
 import { FormatDateFullSpanish, FormatToUSD } from "@/helpers/HelpersFunctions"
 import { toast } from "sonner"
 
-
-
-
 export function EquipoPage() {
   const [miembros, setMiembros] = useState<MiembroEquipoTrabajoType[]>([])
   const [open, setOpen] = useState(false)
@@ -63,13 +60,6 @@ export function EquipoPage() {
   useEffect(() => {
     FN_GET_EQUIPO_TRABAJO()
   }, [])
-
-  // Guardar en localStorage cuando cambie el estado
-  useEffect(() => {
-    if (miembros.length > 0) {
-      localStorage.setItem("miembros", JSON.stringify(miembros))
-    }
-  }, [miembros])
 
   const openEditDialog = (miembro: MiembroEquipoTrabajoType) => {
     setEditingMiembro(miembro)

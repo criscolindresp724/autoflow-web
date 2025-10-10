@@ -11,17 +11,6 @@ import TALLER_SERVICES, { CargoTallerType, EspecialidadType, EstadoPersonalType 
 import EQUIPO_TRABAJO_SERVICES, { InsertMiembroEquipo, MiembroEquipoTrabajoType } from "@/services/EQUIPO_TRABAJO_SERVICES.service"
 import { toast } from "sonner"
 
-interface MiembroForm {
-  nombre: string
-  apellido: string
-  cargo: string
-  especialidad: string
-  telefono: string
-  email: string
-  estado: "Activo" | "Inactivo" | "De Vacaciones" | "Permiso"
-  salario?: number
-}
-
 interface NuevoMiembroFormProps {
   onSuccess: () => void
   miembroExistente?: MiembroEquipoTrabajoType
@@ -36,7 +25,8 @@ export function NuevoMiembroForm({ onSuccess, miembroExistente }: NuevoMiembroFo
     telefono: "",
     email: "",
     estado_personal_id: 1,
-    salario: null
+    salario: null,
+    horas_trabajadas: 0
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -101,6 +91,7 @@ export function NuevoMiembroForm({ onSuccess, miembroExistente }: NuevoMiembroFo
         email: miembroExistente.email || "",
         estado_personal_id: null,
         salario: miembroExistente.salario || 0,
+        horas_trabajadas: 0
       })
     }
   }, [miembroExistente])
@@ -137,6 +128,7 @@ export function NuevoMiembroForm({ onSuccess, miembroExistente }: NuevoMiembroFo
         email: "",
         estado_personal_id: 1,
         salario: 0,
+        horas_trabajadas: 0
       })
     }
 

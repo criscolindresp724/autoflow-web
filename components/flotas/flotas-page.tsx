@@ -1,5 +1,4 @@
 "use client"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -15,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { NuevaFlotaForm } from "./nueva-flota-form"
+
 import { Badge } from "@/components/ui/badge"
 import { DetalleFlota } from "./detalle-flota"
 import { ConductoresFlota } from "./conductores-flota"
@@ -36,7 +35,7 @@ import { toast } from "sonner"
 
 
 
-export function FlotasPage() {
+export default function FlotasPage() {
   const [flotas, setFlotas] = useState<FlotaType[]>([])
   const [open, setOpen] = useState(false)
   const [editingFlota, setEditingFlota] = useState<FlotaType | null>(null)
@@ -130,7 +129,7 @@ export function FlotasPage() {
                   <Plus className="mr-2 h-4 w-4" /> Nueva Flota
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[700px]">
+              <DialogContent className="sm:max-w-[75vw] w-[75vw] h-[95vh] overflow-auto">
                 <DialogHeader>
                   <DialogTitle>{editingFlota ? "Editar Flota" : "Nueva Flota"}</DialogTitle>
                   <DialogDescription>
@@ -139,10 +138,11 @@ export function FlotasPage() {
                       : "Ingresa la información de la nueva flota."}
                   </DialogDescription>
                 </DialogHeader>
-                <NuevaFlotaForm
+                <DetalleFlota />
+                {/* <NuevaFlotaForm
                   onSuccess={() => { FN_GET_FLOTAS(), setOpen(false) }}
                   flotaExistente={editingFlota}
-                />
+                /> */}
               </DialogContent>
             </Dialog>
           </div>
@@ -367,7 +367,7 @@ export function FlotasPage() {
 
       {/* Diálogo para mostrar detalles de la flota */}
       <Dialog open={mostrarDetalle} onOpenChange={setMostrarDetalle}>
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className="sm:max-w-[100rem] w-[150rem] h-[95%] overflow-auto">
           <DialogHeader>
             <DialogTitle>Detalle de Flota</DialogTitle>
             <DialogDescription>Información completa de la flota seleccionada</DialogDescription>
