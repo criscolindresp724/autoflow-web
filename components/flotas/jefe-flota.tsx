@@ -54,7 +54,7 @@ export default function JefeFlotaForm() {
                             required
                         />
                     </div>
-                    <div className="grid gap-2">
+                    {/* <div className="grid gap-2">
                         <Label htmlFor="identificacion_fiscal">Informacion Personal</Label>
                         <Input
                             id="identificacion_fiscal"
@@ -65,9 +65,9 @@ export default function JefeFlotaForm() {
                             maxLength={80}
                             required
                         />
-                    </div>
+                    </div> */}
                     <div className="grid gap-2">
-                        <Label htmlFor="estado_personal_id">Estado *</Label>
+                        <Label htmlFor="estado_personal_id">Disponibilidad *</Label>
                         <Select onValueChange={(value) => ''}>
                             <SelectTrigger id="estado_personal_id">
                                 <SelectValue placeholder="Seleccionar estado" />

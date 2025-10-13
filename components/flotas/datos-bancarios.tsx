@@ -42,7 +42,7 @@ export default function DatosBancarios() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="estado_personal_id">Tarifa de servicios</Label>
+                        <Label htmlFor="estado_personal_id">Tipo de cuenta</Label>
                         <Select onValueChange={(value) => ''}>
                             <SelectTrigger id="estado_personal_id">
                                 <SelectValue placeholder="Seleccionar Servicio" />
@@ -57,6 +57,9 @@ export default function DatosBancarios() {
                             </SelectContent>
                         </Select>
                     </div>
+                    
+                    {/* Selector tipo de moneda */}
+
                 </section>
             </CardContent>
         </Card>

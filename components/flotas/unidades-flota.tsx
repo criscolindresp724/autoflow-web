@@ -193,6 +193,7 @@ export default function UnidadesFlotas() {
     }, [])
     return (
         <section>
+            {/* el historial de servicios se va obtener automaticamente de las ordenes que ya estan guardadas en la bd ordenes de trabajo por cada vehiculo en base a la placa */}
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Vehículos de la Flota</CardTitle>

@@ -14,6 +14,9 @@ export default function DatosComunicacionForm() {
                 <CardTitle>Datos de comunicacion</CardTitle>
             </CardHeader>
             <CardContent>
+                {
+                    /*Agreagar un input donde se ingrese el departamento y por cada departamento editar esos campos */
+                }
                 <section className="grid grid-cols-3 gap-3">
 
                     <div className="grid gap-2">

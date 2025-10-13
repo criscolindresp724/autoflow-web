@@ -71,6 +71,7 @@ export default function TerminosContratosPoliticas() {
                 </Button>
             </CardHeader>
             <CardContent>
+                {/*Agregar un input donde el usuario pueda subir un archivo pdf de las politicas, y ordenarlas por tipo de politicas*/}
                 {
                     State_Nuevo &&
                     <Card>

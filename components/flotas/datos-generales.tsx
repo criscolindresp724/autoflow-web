@@ -150,10 +150,10 @@ export default function DatosGenerales({ onSuccess, flotaExistente }: NuevaFlota
             <Label htmlFor="nombre">Nombre de la Flota *</Label>
             <Input id="nombre" name="nombre" value={formData.nombre} onChange={handleInputChange} required />
           </div>
-          <div className="grid gap-2">
+          {/* <div className="grid gap-2">
             <Label htmlFor="nombre">Numero RTN</Label>
             <Input type="text" id="numero_rtn" name="numero_rtn" value={formData.numero_rtn} onChange={handleInputChange} required />
-          </div>
+          </div> */}
 
           <div className="grid gap-2">
             <Label htmlFor="empresa">Empresa *</Label>
@@ -189,7 +189,7 @@ export default function DatosGenerales({ onSuccess, flotaExistente }: NuevaFlota
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="identificacion_fiscal">Identificacion Fiscal</Label>
+            <Label htmlFor="identificacion_fiscal">Identificacion Fiscal (RTN)</Label>
             <Input
               id="identificacion_fiscal"
               name="identificacion_fiscal"
