@@ -20,6 +20,31 @@ import * as XLSX from "xlsx"
 import { toast } from "sonner";
 import CLIENTS_SERVICES, { ClienteType } from "@/services/CLIENTES_SERVICES.SERVICE";
 import VEHICULO_SERVICES, { VehiculoType } from "@/services/VEHICULOS.SERVICE";
+export type VehiculoInfo = {
+    numeroUnidad: string;
+    marcaModelo: string;
+    numeroPlaca: string;
+    numeroVin: string;
+    anioFabricacion: string;
+    kilometrajeActual: string;
+    estadoVehiculo: string;
+    fechaUltimoMantenimiento: string;
+    proximoMantenimientoProgramado: string;
+    historialReparaciones: string;
+    conductoresAsignados: string;
+    permisoExplotacionUnidad: string;
+    fechaAutorizacionExplotacionUnidad: string;
+    fechaVencimientoExplotacionUnidad: string;
+    permisoCirculacion: string;
+    fechaAutorizacionCirculacion: string;
+    fechaVencimientoCirculacion: string;
+    permisoPublicidad: string;
+    fechaAutorizacionPublicidad: string;
+    fechaVencimientoPublicidad: string;
+    permisosEspeciales: string;
+    fechaAutorizacionEspeciales: string;
+    fechaVencimientoEspeciales: string;
+};
 
 export default function UnidadesFlotas() {
     const [State_EstadosPersonal, SetState_EstadosPersonal] = useState<EstadoPersonalType[]>([])
@@ -28,6 +53,7 @@ export default function UnidadesFlotas() {
     const [isImporting, setIsImporting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [clientes, setClientes] = useState<Omit<ClienteType, 'password'>[]>([])
+    const [ListaVehiculos, SetListaVehiculos] = useState<VehiculoInfo[]>([])
     const FN_GET_DATA_INPUTS = async () => {
         const res3 = await TALLER_SERVICES.GET_ESTADO_PERSONAL()
         SetState_EstadosPersonal(res3)
@@ -121,6 +147,7 @@ export default function UnidadesFlotas() {
         }
     }
     // Nueva función para importar vehículos con auto-registro de clientes
+
     const requiredFields = [
         "Número de Unidad",
         "Marca y Modelo",
@@ -166,7 +193,8 @@ export default function UnidadesFlotas() {
                 setIsImporting(false);
                 return; // detenemos el proceso
             } else {
-                toast.success("✅ Todos los campos requeridos están presentes en el Excel.");
+
+                toast.success("Importación exitosa de vehículos.");
             }
 
             // ✅ 3️⃣ Convertir el Excel a JSON (cada fila como objeto)
@@ -174,6 +202,32 @@ export default function UnidadesFlotas() {
 
             // Aquí puedes procesar los datos como necesites
             console.log("Datos importados:", jsonData);
+            const VehiculosData = jsonData.map((item: any) => ({
+                numeroUnidad: item["Número de Unidad"],
+                marcaModelo: item["Marca y Modelo"],
+                numeroPlaca: item["Número de Placa"],
+                numeroVin: item["Número de VIN"],
+                anioFabricacion: item["Año de Fabricación"],
+                kilometrajeActual: item["Kilometraje Actual"],
+                estadoVehiculo: item["Estado del Vehículo"],
+                fechaUltimoMantenimiento: item["Fecha de Último Mantenimiento"],
+                proximoMantenimientoProgramado: item["Próximo Mantenimiento Programado"],
+                historialReparaciones: item["Historial de Reparaciones"],
+                conductoresAsignados: item["Conductores Asignados"],
+                permisoExplotacionUnidad: item["Permiso de Explotación de Unidad"],
+                fechaAutorizacionExplotacionUnidad: item["Fecha Autorización de Explotación de Unidad"],
+                fechaVencimientoExplotacionUnidad: item["Fecha Vencimiento de Explotación de Unidad"],
+                permisoCirculacion: item["Permiso de Circulación"],
+                fechaAutorizacionCirculacion: item["Fecha Autorización de Circulación"],
+                fechaVencimientoCirculacion: item["Fecha Vencimiento de Circulación"],
+                permisoPublicidad: item["Permiso de Publicidad"],
+                fechaAutorizacionPublicidad: item["Fecha Autorización de Publicidad"],
+                fechaVencimientoPublicidad: item["Fecha Vencimiento de Publicidad"],
+                permisosEspeciales: item["Permisos Especiales"],
+                fechaAutorizacionEspeciales: item["Fecha Autorización Especiales"],
+                fechaVencimientoEspeciales: item["Fecha Vencimiento Especiales"],
+            })) as VehiculoInfo[];
+            SetListaVehiculos(VehiculosData)
 
         } catch (error) {
             console.error("Error al procesar archivo:", error);
@@ -206,26 +260,58 @@ export default function UnidadesFlotas() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Placa</TableHead>
-                                <TableHead>Marca</TableHead>
-                                <TableHead>Modelo</TableHead>
-                                <TableHead>Año</TableHead>
-                                <TableHead>Tipo</TableHead>
-                                <TableHead>Último Servicio</TableHead>
-                                <TableHead>Próximo Servicio</TableHead>
+                                <TableHead>Número de Unidad</TableHead>
+                                <TableHead>Marca y Modelo</TableHead>
+                                <TableHead>Número de VIN</TableHead>
+                                <TableHead>Año de Fabricación</TableHead>
+                                <TableHead>Kilometraje Actual</TableHead>
+                                <TableHead>Estado del Vehículo</TableHead>
+                                <TableHead>Fecha de Último Mantenimiento</TableHead>
+                                <TableHead>Próximo Mantenimiento Programado</TableHead>
+                                <TableHead>Historial de Reparaciones</TableHead>
+                                <TableHead>Conductores Asignados</TableHead>
+                                <TableHead>Permiso de Explotación de Unidad</TableHead>
+                                <TableHead>Fecha Autorización de Explotación de Unidad</TableHead>
+                                <TableHead>Fecha Vencimiento de Explotación de Unidad</TableHead>
+                                <TableHead>Permiso de Circulación</TableHead>
+                                <TableHead>Fecha Autorización de Circulación</TableHead>
+                                <TableHead>Fecha Vencimiento de Circulación</TableHead>
+                                <TableHead>Permiso de Publicidad</TableHead>
+                                <TableHead>Fecha Autorización de Publicidad</TableHead>
+                                <TableHead>Fecha Vencimiento de Publicidad</TableHead>
+                                <TableHead>Permisos Especiales</TableHead>
+                                <TableHead>Fecha Autorización Especiales</TableHead>
+                                <TableHead>Fecha Vencimiento Especiales</TableHead>
                                 <TableHead>Estado</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {vehiculos.map((vehiculo) => (
-                                <TableRow key={vehiculo.id}>
-                                    <TableCell className="font-medium">{vehiculo.placa}</TableCell>
-                                    <TableCell>{vehiculo.marca}</TableCell>
-                                    <TableCell>{vehiculo.modelo}</TableCell>
-                                    <TableCell>{vehiculo.año}</TableCell>
-                                    <TableCell>{vehiculo.tipo}</TableCell>
-                                    <TableCell>{vehiculo.ultimoServicio}</TableCell>
-                                    <TableCell>{vehiculo.proximoServicio}</TableCell>
-                                    <TableCell>{getEstadoBadge(vehiculo.estado)}</TableCell>
+                            {ListaVehiculos.map((vehiculo) => (
+                                <TableRow key={vehiculo.numeroPlaca}>
+                                    <TableCell className="font-medium">{vehiculo.numeroPlaca}</TableCell>
+                                    <TableCell>{vehiculo.numeroUnidad}</TableCell>
+                                    <TableCell>{vehiculo.marcaModelo}</TableCell>
+                                    <TableCell>{vehiculo.numeroVin}</TableCell>
+                                    <TableCell>{vehiculo.anioFabricacion}</TableCell>
+                                    <TableCell>{vehiculo.kilometrajeActual}</TableCell>
+                                    <TableCell>{vehiculo.estadoVehiculo}</TableCell>
+                                    <TableCell>{vehiculo.fechaUltimoMantenimiento}</TableCell>
+                                    <TableCell>{vehiculo.proximoMantenimientoProgramado}</TableCell>
+                                    <TableCell>{vehiculo.historialReparaciones}</TableCell>
+                                    <TableCell>{vehiculo.conductoresAsignados}</TableCell>
+                                    <TableCell>{vehiculo.permisoExplotacionUnidad}</TableCell>
+                                    <TableCell>{vehiculo.fechaAutorizacionExplotacionUnidad}</TableCell>
+                                    <TableCell>{vehiculo.fechaVencimientoExplotacionUnidad}</TableCell>
+                                    <TableCell>{vehiculo.permisoCirculacion}</TableCell>
+                                    <TableCell>{vehiculo.fechaAutorizacionCirculacion}</TableCell>
+                                    <TableCell>{vehiculo.fechaVencimientoCirculacion}</TableCell>
+                                    <TableCell>{vehiculo.permisoPublicidad}</TableCell>
+                                    <TableCell>{vehiculo.fechaAutorizacionPublicidad}</TableCell>
+                                    <TableCell>{vehiculo.fechaVencimientoPublicidad}</TableCell>
+                                    <TableCell>{vehiculo.permisosEspeciales}</TableCell>
+                                    <TableCell>{vehiculo.fechaAutorizacionEspeciales}</TableCell>
+                                    <TableCell>{vehiculo.fechaVencimientoEspeciales}</TableCell>
+                                    <TableCell>{getEstadoBadge(vehiculo.estadoVehiculo)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

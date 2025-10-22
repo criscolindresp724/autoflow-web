@@ -29,15 +29,30 @@ export default function DatosBancarios() {
                 <section className="grid grid-cols-3 gap-3">
 
                     <div className="grid gap-2">
-                        <Label htmlFor="identificacion_fiscal">Entidad Bancaria</Label>
+                        <Label htmlFor="entidad_bancaria">Entidad Bancaria</Label>
                         <Input
-                            id="identificacion_fiscal"
-                            name="identificacion_fiscal"
+                            id="entidad_bancaria"
+                            name="entidad_bancaria"
                             type="text"
                             // value={formData.identificacion_fiscal}
                             // onChange={handleInputChange}
                             maxLength={80}
                             required
+                            placeholder="Banco con el que trabaja la flota"
+                        />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="cuenta_bancaria">Cuenta bancaria de la flota</Label>
+                        <Input
+                            id="cuenta_bancaria"
+                            name="cuenta_bancaria"
+                            type="text"
+                            // value={formData.identificacion_fiscal}
+                            // onChange={handleInputChange}
+                            maxLength={80}
+                            required
+                            placeholder="Numero de cuenta asociada a la flota para transacciones"
                         />
                     </div>
 
@@ -57,7 +72,34 @@ export default function DatosBancarios() {
                             </SelectContent>
                         </Select>
                     </div>
-                    
+                    <div className="grid gap-2">
+                        <Label htmlFor="tipo_cuenta">Tipo de cuenta</Label>
+                        <Select onValueChange={(value) => ''}>
+                            <SelectTrigger id="tipo_cuenta">
+                                <SelectValue placeholder="Seleccionar tipo de cuenta" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem key="pago" value="pago">Pago</SelectItem>
+                                <SelectItem key="cobro" value="cobro">Cobro</SelectItem>
+                                <SelectItem key="editable" value="editable">editable</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="moneda">Moneda</Label>
+                        <Select onValueChange={(value) => ''}>
+                            <SelectTrigger id="moneda">
+                                <SelectValue placeholder="Seleccionar tipo de moneda" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem key="dolares" value="dolares">dolares</SelectItem>
+                                <SelectItem key="quetzales" value="quetzales">quetzales</SelectItem>
+                                <SelectItem key="lempiras" value="lempiras">lempiras</SelectItem>
+                                <SelectItem key="editable" value="editable">editable</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                     {/* Selector tipo de moneda */}
 
                 </section>
